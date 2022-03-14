@@ -1,0 +1,16 @@
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+indent_style = tab
+
+[*.{css,sass,scss,html,pug,js}]
+indent_size = 4
+
+[*.{json,yml}]
+indent_style = space
+indent_size = 2
+
+[package.json]
+indent_size = 2
