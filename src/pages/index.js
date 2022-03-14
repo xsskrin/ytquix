@@ -17,7 +17,6 @@ export default function Home() {
 		<div className={s.container}>
 			<Head>
 				<title>JS Praktix</title>
-				<link rel="icon" href="/logo.jpg" />
 			</Head>
 			<div className={s.header}>
 				<img className={s.logo} src="/logo.jpg" />
