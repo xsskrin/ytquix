@@ -24,7 +24,7 @@ function MyApp({ Component, pageProps }) {
 	const layoutProps = { ...pageProps };
 	const layout = Component.layout || Layout;
 
-	layoutProps.title = Component.title || 'JS Praktix';
+	layoutProps.title = Component.title;
 
 	return React.createElement(layout, layoutProps, (
 		<Component {...pageProps} />
