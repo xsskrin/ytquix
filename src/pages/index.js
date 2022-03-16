@@ -10,6 +10,7 @@ const Episode = function (num, title, url) {
 
 const episodes = [
 	new Episode('1.', 'Canvas Square', '/canvas-square'),
+	// new Episode('2.', 'Bouncy Ball', '/bouncy-ball'),
 ];
 
 export default function Home() {

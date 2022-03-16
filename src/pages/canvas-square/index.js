@@ -1,79 +1,71 @@
 import { useRef, useEffect } from 'react';
 import s from './canvas-square.module.sass';
 
+const createCanvasSquare = (canvas) => {
+	const ctx = canvas.getContext('2d');
+	const W = canvas.parentNode.offsetWidth;
+	const H = canvas.parentNode.offsetHeight;
+
+	canvas.width = W;
+	canvas.height = H;
+
+	let x = 100, y = 100;
+	let size = 40;
+	let speedX = 4, speedY = 4;
+	let sizeStep = -1;
+	let maxSize = 80;
+	let minSize = 20;
+
+	const draw = () => {
+		ctx.fillRect(x, y, size, size);
+	};
+
+	const step = () => {
+		frameId = requestAnimationFrame(step);
+		ctx.clearRect(0, 0, W, H);
+		draw();
+		x += speedX;
+		y += speedY;
+		size += sizeStep;
+
+		if (x >= W - size) {
+			x = W - size;
+			speedX *= -1;
+		} else if (x <= 0) {
+			x = 0;
+			speedX *= -1;
+		}
+
+		if (y >= H - size) {
+			y = H - size;
+			speedY *= -1;
+		} else if (y <= 0) {
+			y = 0;
+			speedY *= -1;
+		}
+
+		if (size >= maxSize || size <= minSize) {
+			sizeStep *= -1;
+		}
+	};
+
+	let frameId = requestAnimationFrame(step);
+
+	return () => {
+		cancelAnimationFrame(frameId);
+	};
+};
+
 const CanvasSquare = () => {
-	const ref = useRef();
+	const canvasRef = useRef();
 
 	useEffect(() => {
-		const canvas = ref.current;
-		const ctx = canvas.getContext('2d');
-
-		const width = window.innerWidth;
-		const height = canvas.parentNode.offsetHeight;
-
-		canvas.width = width;
-		canvas.height = height;
-
-		let size = 30;
-		let color = '#000';
-		let x = 0, y = 0;
-		let speedX = 2, speedY = 2;
-
-		const drawSquare = () => {
-			ctx.fillStyle = color;
-			ctx.fillRect(x, y, size, size);
-		};
-
-		const clear = () => {
-			ctx.clearRect(x, y, size, size);
-		};
-
-		let frameId;
-		const step = () => {
-			frameId = requestAnimationFrame(step);
-			clear();
-
-			x += speedX;
-			y += speedY;
-
-			if (x >= width - size) {
-				x = width - size;
-				speedX *= -1;
-			} else if (x <= 0) {
-				x = 0;
-				speedX *= -1;
-			}
-
-			if (y >= height - size) {
-				y = height - size;
-				speedY *= -1;
-			} else if (y <= 0) {
-				y = 0;
-				speedY *= -1;
-			}
-
-			drawSquare();
-		};
-
-		frameId = requestAnimationFrame(step);
-
-		const toggleOnSpacebar = (e) => {
-			if (e.keyCode === 32) {
-				if (frameId) {
-					cancelAnimationFrame(frameId);
-					frameId = null;
-				} else {
-					frameId = requestAnimationFrame(step);
-				}
-			}
-		};
-
-		window.addEventListener('keyup', toggleOnSpacebar);
+		return createCanvasSquare(canvasRef.current);
 	}, []);
 
 	return (
 		<div className={s.wrapper}>
-			<canvas className={s.canvas} ref={ref} />
+			<canvas ref={canvasRef} />
 		</div>
 	);
 };
