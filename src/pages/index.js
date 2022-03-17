@@ -10,7 +10,7 @@ const Episode = function (num, title, url) {
 
 const episodes = [
 	new Episode('1.', 'Canvas Square', '/canvas-square'),
-	// new Episode('2.', 'Bouncy Ball', '/bouncy-ball'),
+	new Episode('2.', 'Bouncy Ball', '/bouncy-ball'),
 ];
 
 export default function Home() {
@@ -35,7 +35,7 @@ export default function Home() {
 			<div className={s.items}>
 				{episodes.map((episode) => {
 					return (
-						<Link href={episode.url}>
+						<Link key={episode.num} href={episode.url}>
 							<div className={s.item}>
 								<div className={s.num}>
 									{episode.num}
