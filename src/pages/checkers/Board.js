@@ -1,9 +1,11 @@
-
+import Piece from './Piece';
 
 class Board {
 	constructor() {
 		this.el = document.createElement('div');
 		this.el.className = 'checkers-board';
+
+		this.fieldsByNum = {};
 
 		this.initialize();
 	}
@@ -28,7 +30,28 @@ class Board {
 			el.className += ` checkers-field-light`;
 		}
 
+		const num = row * 8 + col;
+		el.setAttribute('data-num', num);
+		this.fieldsByNum[num] = el;
+
 		return el;
+	}
+
+	fillWithPieces() {
+		for (let i = 0; i < 3; i += 1) {
+			for (let j = i % 2; j < 8; j += 2) {
+				const piece = new Piece('red');
+				const field = this.fieldsByNum[i * 8 + j];
+				piece.setField(field);
+			}
+		}
+		for (let i = 5; i < 8; i += 1) {
+			for (let j = i % 2; j < 8; j += 2) {
+				const piece = new Piece('blue');
+				const field = this.fieldsByNum[i * 8 + j];
+				piece.setField(field);
+			}
+		}
 	}
 
 	appendTo(container) {

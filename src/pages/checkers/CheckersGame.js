@@ -6,6 +6,8 @@ class CheckersGame {
 
 		this.board = new Board();
 		this.board.appendTo(this.container);
+
+		this.board.fillWithPieces();
 	}
 
 	clear() {
