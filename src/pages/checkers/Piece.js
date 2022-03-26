@@ -11,7 +11,7 @@ class Piece {
 
 	setField(field) {
 		this.field = field;
-		this.field.appendChild(this.el);
+		this.field.el.appendChild(this.el);
 	}
 }
 
