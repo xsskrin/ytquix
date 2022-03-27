@@ -5,7 +5,11 @@ const Checkers = () => {
 	const ref = useRef();
 
 	useEffect(() => {
-		const game = new CheckersGame(ref.current);
+		const game = new CheckersGame(ref.current, {
+			rows: 10,
+			cols: 10,
+			fillRows: 3,
+		});
 		return () => game.clear();
 	}, []);
 

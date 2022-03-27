@@ -1,7 +1,7 @@
 
 
 class Field {
-	constructor(row, col, color) {
+	constructor(game, row, col) {
 		this.row = row;
 		this.col = col;
 
@@ -12,7 +12,7 @@ class Field {
 		this.el.className = 'checkers-field';
 		this.el.className += ` checkers-field-${colorStr}`;
 
-		const num = row * 8 + col;
+		const num = row * game.config.cols + col;
 		this.num = num;
 		this.el.setAttribute('data-num', num);
 	}

@@ -10,8 +10,10 @@ class Piece {
 	}
 
 	setField(field) {
-		this.field = field;
-		this.field.el.appendChild(this.el);
+		if (field) {
+			this.field = field;
+			this.field.el.appendChild(this.el);
+		}
 	}
 }
 
