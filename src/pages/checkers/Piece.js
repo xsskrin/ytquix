@@ -1,12 +1,14 @@
-
+import { getColorString } from './utils';
 
 class Piece {
 	constructor(color) {
 		this.color = color;
 
+		const colorStr = getColorString(color);
+
 		this.el = document.createElement('div');
 		this.el.className = 'checkers-piece';
-		this.el.className += ` checkers-piece-${color}`;
+		this.el.className += ` checkers-piece-${colorStr}`;
 	}
 
 	setField(field) {

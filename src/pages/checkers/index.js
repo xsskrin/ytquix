@@ -6,8 +6,8 @@ const Checkers = () => {
 
 	useEffect(() => {
 		const game = new CheckersGame(ref.current, {
-			rows: 10,
-			cols: 10,
+			rows: 8,
+			cols: 8,
 			fillRows: 3,
 		});
 		return () => game.clear();

@@ -1,5 +1,6 @@
 import Field from './Field';
 import Piece from './Piece';
+import { DARK, LIGHT } from './consts';
 
 class CheckersGame {
 	constructor(container, config) {
@@ -24,6 +25,7 @@ class CheckersGame {
 		this.createFieldStyle();
 		this.createFields();
 		this.createPieces();
+		this.setPlayer(DARK);
 	}
 
 	createFieldStyle() {
@@ -57,18 +59,34 @@ class CheckersGame {
 
 		for (let i = 0; i < fillRows; i += 1) {
 			for (let j = i % 2; j < cols; j += 2) {
-				const piece = new Piece('red');
+				const piece = new Piece(DARK);
 				const field = this.fieldsByNum[i * cols + j];
 				piece.setField(field);
 			}
 		}
 		for (let i = rows - fillRows; i < rows; i += 1) {
 			for (let j = i % 2; j < cols; j += 2) {
-				const piece = new Piece('blue');
+				const piece = new Piece(LIGHT);
 				const field = this.fieldsByNum[i * cols + j];
 				piece.setField(field);
 			}
 		}
+	}
+
+	setPlayer(player) {
+		this.player = player;
+		this.setNamespaceClass('player', player);
+	}
+
+	setNamespaceClass(namespace, cls) {
+		const namespaceStr = `checkers--${namespace}`;
+
+		const className = this.el.className.split(' ')
+			.filter((part) => part.indexOf(namespaceStr) !== 0)
+
+		className.push(`${namespaceStr}_${cls}`);
+
+		this.el.className = className.join(' ');
 	}
 
 	clear() {
