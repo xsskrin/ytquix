@@ -1,6 +1,7 @@
 import Field from './Field';
 import Piece from './Piece';
 import { DARK, LIGHT } from './consts';
+import { getColorString } from './utils';
 
 class CheckersGame {
 	constructor(container, config) {
@@ -25,7 +26,88 @@ class CheckersGame {
 		this.createFieldStyle();
 		this.createFields();
 		this.createPieces();
-		this.setPlayer(DARK);
+		this.setPlayer(LIGHT);
+
+		this.onCurrentClick = this.playerMoveClick;
+		this.el.addEventListener('click', this.onClick);
+	}
+
+	onClick = (e) => {
+		this.onCurrentClick(e);
+	}
+
+	playerMoveClick(e) {
+		const el = e.target;
+
+		const playerColor = getColorString(this.player);
+
+		if (this.selected) {
+			this.selected.classList.remove('checkers-piece-selected');
+			this.selected = null;
+		}
+		if (el.classList.contains(`checkers-piece-${playerColor}`)) {
+			this.selected = el;
+			el.classList.add('checkers-piece-selected');
+			this.highlightPossibleMoves(el.parentNode.dataset.num);
+		}
+	}
+
+	highlightPossibleMoves(fieldNum) {
+		if (this.moves) {
+			this.moves.forEach((move) => {
+				const field = this.getField(move.row, move.col);
+				field.unhighlight();
+			});
+		}
+
+		const row = Math.floor(fieldNum / this.config.cols);
+		const col = fieldNum % this.config.cols;
+		const otherPlayer = this.player === DARK ? LIGHT : DARK;
+		const rowChange = this.player === DARK ? 1 : -1;
+
+		const possibleRow = row + rowChange;
+
+		const moves = [];
+		[1, -1].forEach((colChange) => {
+			let field = this.getField(
+				possibleRow, col + colChange,
+			);
+			if (field) {
+				if (!field.piece) {
+					moves.push({
+						row: possibleRow,
+						col: col + colChange,
+					});
+				} else if (field.piece.color === otherPlayer) {
+					field = this.getField(
+						possibleRow + rowChange,
+						col + colChange * 2,
+					);
+					if (field && !field.piece) {
+						moves.push({
+							row: possibleRow + rowChange,
+							col: col + colChange * 2,
+							attacking: {
+								row: possibleRow,
+								col: col + colChange,
+							},
+						});
+					}
+				}
+			}
+		});
+
+		moves.forEach((move) => {
+			const field = this.getField(move.row, move.col);
+			field.highlight();
+		});
+
+		this.moves = moves;
+	}
+
+	getField(row, col) {
+		if (col < 0 || col >= this.config.cols) return null;
+		return this.fieldsByNum[row * this.config.cols + col];
 	}
 
 	createFieldStyle() {

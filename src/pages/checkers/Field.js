@@ -16,6 +16,14 @@ class Field {
 		this.num = num;
 		this.el.setAttribute('data-num', num);
 	}
+
+	highlight() {
+		this.el.classList.add('checkers-field-highlight');
+	}
+
+	unhighlight() {
+		this.el.classList.remove('checkers-field-highlight');
+	}
 }
 
 export default Field;

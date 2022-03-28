@@ -12,9 +12,13 @@ class Piece {
 	}
 
 	setField(field) {
+		if (this.field) {
+			this.field.piece = null;
+		}
 		if (field) {
 			this.field = field;
 			this.field.el.appendChild(this.el);
+			field.piece = this;
 		}
 	}
 }
