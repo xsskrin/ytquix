@@ -1,7 +1,8 @@
 import { getColorString } from './utils';
 
 class Piece {
-	constructor(color) {
+	constructor(game, color) {
+		this.game = game;
 		this.color = color;
 
 		const colorStr = getColorString(color);
@@ -19,6 +20,19 @@ class Piece {
 			this.field = field;
 			this.field.el.appendChild(this.el);
 			field.piece = this;
+			this.game.piecesByNum[field.num] = this;
+		}
+	}
+
+	select() {
+		this.el.classList.add('checkers-piece-selected');
+		this.game.selectedPiece = this;
+	}
+
+	unselect() {
+		this.el.classList.remove('checkers-piece-selected');
+		if (this.game.selectedPiece === this) {
+			this.game.selectedPiece = null;
 		}
 	}
 }

@@ -22,6 +22,8 @@ class CheckersGame {
 		this.container.appendChild(this.el);
 
 		this.fieldsByNum = {};
+		this.piecesByNum = {};
+		this.movesByNum = {};
 
 		this.createFieldStyle();
 		this.createFields();
@@ -36,29 +38,57 @@ class CheckersGame {
 		this.onCurrentClick(e);
 	}
 
-	playerMoveClick(e) {
-		const el = e.target;
-
-		const playerColor = getColorString(this.player);
-
-		if (this.selected) {
-			this.selected.classList.remove('checkers-piece-selected');
-			this.selected = null;
+	clearSelection() {
+		if (this.selectedPiece) {
+			this.selectedPiece.unselect();
 		}
-		if (el.classList.contains(`checkers-piece-${playerColor}`)) {
-			this.selected = el;
-			el.classList.add('checkers-piece-selected');
-			this.highlightPossibleMoves(el.parentNode.dataset.num);
-		}
-	}
-
-	highlightPossibleMoves(fieldNum) {
 		if (this.moves) {
 			this.moves.forEach((move) => {
 				const field = this.getField(move.row, move.col);
+				delete this.movesByNum[move.row * this.config.cols + move.col];
 				field.unhighlight();
 			});
+			this.moves.length = 0;
 		}
+	}
+
+	getNum(element) {
+		while (element) {
+			if (element.dataset && element.dataset.num) {
+				return element.dataset.num;
+			}
+			element = element.parentNode;
+		}
+	}
+
+	playerMoveClick(e) {
+		const el = e.target;
+		const playerColor = getColorString(this.player);
+		const fieldNum = this.getNum(el);
+
+		if (
+			// current player's piece clicked
+			el.classList.contains(`checkers-piece-${playerColor}`)
+		) {
+			this.clearSelection();
+			this.piecesByNum[fieldNum].select();
+			this.highlightPossibleMoves(el.parentNode.dataset.num);
+		} else if (
+			// highlighted field clicked
+			el.classList.contains('checkers-field-highlight')
+		) {
+			const move = this.movesByNum[fieldNum];
+			this.movePiece(this.selectedPiece, move);
+		} else {
+			this.clearSelection();
+		}
+	}
+
+	movePiece(piece, move) {
+		console.log(piece, move);
+	}
+
+	highlightPossibleMoves(fieldNum) {
 
 		const row = Math.floor(fieldNum / this.config.cols);
 		const col = fieldNum % this.config.cols;
@@ -99,6 +129,7 @@ class CheckersGame {
 
 		moves.forEach((move) => {
 			const field = this.getField(move.row, move.col);
+			this.movesByNum[move.row * this.config.cols + move.col] = move;
 			field.highlight();
 		});
 
@@ -141,14 +172,14 @@ class CheckersGame {
 
 		for (let i = 0; i < fillRows; i += 1) {
 			for (let j = i % 2; j < cols; j += 2) {
-				const piece = new Piece(DARK);
+				const piece = new Piece(this, DARK);
 				const field = this.fieldsByNum[i * cols + j];
 				piece.setField(field);
 			}
 		}
 		for (let i = rows - fillRows; i < rows; i += 1) {
 			for (let j = i % 2; j < cols; j += 2) {
-				const piece = new Piece(LIGHT);
+				const piece = new Piece(this, LIGHT);
 				const field = this.fieldsByNum[i * cols + j];
 				piece.setField(field);
 			}
