@@ -32,7 +32,7 @@ export default function Home() {
 				viewBox="0 0 100 100"
 				preserveAspectRatio="none"
 			>
-				<path d="M0,0 L 0,100 C 25 25, 75 25, 100,100 L 100,0 Z" vector-effect="non-scaling-stroke"/>
+				<path d="M0,0 L 0,100 C 25 25, 75 25, 100,100 L 100,0 Z" vectorEffect="non-scaling-stroke"/>
 			</svg>
 			<div className={s.items}>
 				{episodes.map((episode) => {
