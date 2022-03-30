@@ -8,7 +8,7 @@ class Animation {
 		this.canvas = canvas;
 		this.ctx = canvas.getContext('2d');
 
-		const SIZE = 400;
+		const SIZE = 500;
 
 		this.setup();
 		this.timeline = new Timeline();
@@ -41,6 +41,7 @@ class Animation {
 		this.objects.push(jsText);
 		this.timeline.add((p) => {
 			jsText.visible = p > 0;
+			jsText.opacity = p;
 			jsText.x = this.W / 2 - (SIZE * .4) + SIZE * .8 * (1 - p);
 			jsText.y = this.H / 2 - (SIZE * .4);
 		}, {
@@ -56,6 +57,7 @@ class Animation {
 		const pt = praktixText;
 		this.timeline.add((p) => {
 			pt.visible = p > 0;
+			pt.opacity = p;
 			pt.x = this.W / 2 - (SIZE * .4) + SIZE * .8 * (1 - p);
 			pt.y = this.H / 2 + (SIZE * .1);
 		}, {

@@ -17,12 +17,31 @@ class Slider {
 	}
 
 	onSliderMouseDown = (e) => {
-		const box = this.el.getBoundingClientRect();
-		const x = Math.min(Math.max(0, e.clientX - box.left), this.width);
-
-		const p = x / this.width;
+		const p = this.calcPFromMouseX(e.clientX);
 		this.onUpdate(p);
 		this.positionHandle(p);
+
+		document.body.addEventListener('mousemove', this.onMouseMove);
+		document.body.addEventListener('mouseup', this.onMouseUp);
+	}
+
+	onMouseMove = (e) => {
+		const p = this.calcPFromMouseX(e.clientX);
+		this.onUpdate(p);
+		this.positionHandle(p);
+	}
+
+	onMouseUp = (e) => {
+		document.body.removeEventListener('mousemove', this.onMouseMove);
+		document.body.removeEventListener('mouseup', this.onMouseUp);
+	}
+
+	calcPFromMouseX(mouseX) {
+		const box = this.el.getBoundingClientRect();
+		const x = Math.min(Math.max(0, mouseX - box.left), this.width);
+
+		const p = x / this.width;
+		return p;
 	}
 
 	set(p) {
