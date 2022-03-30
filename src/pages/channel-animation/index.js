@@ -11,6 +11,7 @@ const ChannelAnimation = () => {
 
 	return (
 		<div
+			className="channel-animation"
 			style={{
 				display: 'flex',
 				flexDirection: 'column',

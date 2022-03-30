@@ -25,13 +25,30 @@ class Square {
 	}
 
 	draw() {
-		this.ctx.fillStyle = this.color;
-		this.ctx.fillRect(
-			this.x,
-			this.y,
-			this.size,
-			this.size,
-		);
+		if (this.visible) {
+			this.ctx.fillStyle = this.color;
+			if (this.rotation) {
+				this.ctx.save();
+				this.ctx.translate(
+					this.x + this.size / 2,
+					this.y + this.size / 2,
+				);
+				this.ctx.rotate(this.rotation);
+				this.ctx.translate(
+					-this.x - this.size / 2,
+					-this.y - this.size / 2,
+				);
+			}
+			this.ctx.fillRect(
+				this.x,
+				this.y,
+				this.size,
+				this.size,
+			);
+			if (this.rotation) {
+				this.ctx.restore();
+			}
+		}
 	}
 }
 

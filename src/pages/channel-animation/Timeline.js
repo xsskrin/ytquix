@@ -51,6 +51,10 @@ class Timeline {
 		if (time >= this.duration) {
 			this.onEnd();
 		}
+
+		if (this.onUpdate) {
+			this.onUpdate(time / this.duration);
+		}
 	}
 }
 
