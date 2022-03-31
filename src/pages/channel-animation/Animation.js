@@ -10,6 +10,8 @@ class Animation {
 
 		const SIZE = 500;
 
+		const FRAME = 150;
+
 		this.setup();
 		this.timeline = new Timeline();
 
@@ -30,13 +32,14 @@ class Animation {
 			ys.x = ys.startX - ys.size / 2;
 			ys.y = ys.startY - ys.size / 2;
 		}, {
-			time: 500,
+			time: FRAME * 5,
 		});
 
 		const jsText = new Text(
 			this.ctx,
 			'JS',
 			SIZE / 2,
+			'#000',
 		);
 		this.objects.push(jsText);
 		this.timeline.add((p) => {
@@ -45,13 +48,14 @@ class Animation {
 			jsText.x = this.W / 2 - (SIZE * .4) + SIZE * .8 * (1 - p);
 			jsText.y = this.H / 2 - (SIZE * .4);
 		}, {
-			time: 300,
+			time: FRAME * 3,
 		});
 
 		const praktixText = new Text(
 			this.ctx,
 			'PRAKTIX',
 			SIZE / 5,
+			'#000',
 		);
 		this.objects.push(praktixText);
 		const pt = praktixText;
@@ -61,8 +65,8 @@ class Animation {
 			pt.x = this.W / 2 - (SIZE * .4) + SIZE * .8 * (1 - p);
 			pt.y = this.H / 2 + (SIZE * .1);
 		}, {
-			time: 300,
-			offset: -200,
+			time: FRAME * 3,
+			offset: FRAME * -2,
 		});
 
 		const whiteSquare = new Square(
@@ -81,7 +85,7 @@ class Animation {
 			ws.x = ws.startX - ws.size / 2;
 			ws.y = ws.startY - ws.size / 2;
 		}, {
-			time: 200,
+			time: FRAME * 2,
 		});
 
 		const blackSquare = new Square(
@@ -100,7 +104,7 @@ class Animation {
 			bs.x = ws.startX - bs.size / 2;
 			bs.y = ws.startY - bs.size / 2;
 		}, {
-			time: 200,
+			time: FRAME * 2,
 		});
 
 		const redSquare = new Square(
@@ -119,7 +123,7 @@ class Animation {
 			rs.x = rs.startX - rs.size / 2;
 			rs.y = rs.startY - rs.size / 2;
 		}, {
-			time: 200,
+			time: FRAME * 2,
 		});
 
 		this.timeline.onUpdate = (p) => {

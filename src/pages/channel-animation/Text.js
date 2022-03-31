@@ -1,10 +1,11 @@
 
 
 class Text {
-	constructor(ctx, text, fontSize) {
+	constructor(ctx, text, fontSize, color) {
 		this.ctx = ctx;
 		this.text = text;
 		this.fontSize = fontSize;
+		this.color = color || '#000';
 	}
 
 	draw() {
@@ -14,7 +15,7 @@ class Text {
 				this.ctx.globalAlpha = this.opacity;
 			}
 			this.ctx.font = `${this.fontSize}px Impact`;
-			this.ctx.fillStyle = '#000';
+			this.ctx.fillStyle = this.color;
 			this.ctx.textBaseline = 'top';
 			this.ctx.fillText(this.text, this.x, this.y);
 			if (this.opacity !== undefined) {

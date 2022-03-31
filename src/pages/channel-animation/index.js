@@ -28,6 +28,6 @@ const ChannelAnimation = () => {
 	);
 };
 
-ChannelAnimation.title = 'Checkers - JS Praktix';
+ChannelAnimation.title = 'Channel animation - JS Praktix';
 
 export default ChannelAnimation;
