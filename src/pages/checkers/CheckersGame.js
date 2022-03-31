@@ -79,13 +79,27 @@ class CheckersGame {
 		) {
 			const move = this.movesByNum[fieldNum];
 			this.movePiece(this.selectedPiece, move);
+			this.clearSelection();
+			this.changePlayer();
 		} else {
 			this.clearSelection();
 		}
 	}
 
 	movePiece(piece, move) {
-		console.log(piece, move);
+		const { row, col, attacking } = move;
+		const field = this.getField(row, col);
+		piece.setField(field);
+
+		if (attacking) {
+			const attackedField = this.getField(
+				attacking.row, attacking.col,
+			);
+			const attackedPiece = attackedField.piece;
+			if (attackedPiece) {
+				attackedPiece.remove();
+			}
+		}
 	}
 
 	highlightPossibleMoves(fieldNum) {
@@ -189,6 +203,11 @@ class CheckersGame {
 	setPlayer(player) {
 		this.player = player;
 		this.setNamespaceClass('player', player);
+	}
+
+	changePlayer() {
+		const otherPlayer = this.player === DARK ? LIGHT : DARK;
+		this.setPlayer(otherPlayer);
 	}
 
 	setNamespaceClass(namespace, cls) {

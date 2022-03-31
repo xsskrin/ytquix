@@ -35,6 +35,14 @@ class Piece {
 			this.game.selectedPiece = null;
 		}
 	}
+
+	remove() {
+		if (this.field) {
+			this.field.piece = null;
+			this.field = null;
+		}
+		this.el.parentNode.removeChild(this.el);
+	}
 }
 
 export default Piece;
