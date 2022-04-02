@@ -20,6 +20,7 @@ class Piece {
 
 	setField(field, attacking) {
 		if (this.field) {
+			delete this.game.piecesByNum[this.field.num];
 			this.field.piece = null;
 			this.el.removeAttribute('data-num');
 		}
@@ -55,6 +56,7 @@ class Piece {
 
 	remove() {
 		if (this.field) {
+			delete this.game.piecesByNum[this.field.num];
 			this.field.piece = null;
 			this.field = null;
 		}

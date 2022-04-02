@@ -27,11 +27,54 @@ class CheckersGame {
 
 		this.createFieldStyle();
 		this.createFields();
-		this.createPieces();
-		this.setPlayer(LIGHT);
+
+		if (!this.load()) {
+			this.createPieces();
+			this.setPlayer(LIGHT);
+		}
 
 		this.onCurrentClick = this.playerMoveClick;
 		this.el.addEventListener('click', this.onClick);
+	}
+
+	load() {
+		let data = window.localStorage.getItem('checkersData');
+		try {
+			data = JSON.parse(data);
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+
+		const { piecesStr, currentPlayer } = data;
+		let num = '', c;
+		for (let i = 0, len = piecesStr.length; i < len; i += 1) {
+			c = piecesStr[i];
+			if (c === 'A' || c === 'B') {
+				const piece = new Piece(this, c === 'A' ? DARK : LIGHT);
+				const field = this.fieldsByNum[num];
+				piece.setField(field);
+				num = '';
+			} else {
+				num += c;
+			}
+		}
+
+		this.setPlayer(currentPlayer);
+
+		return true;
+	}
+
+	save() {
+		const pbn = this.piecesByNum;
+		const piecesStr = Object.keys(pbn).map((num) => {
+			return `${num}${pbn[num].color === DARK ? 'A' : 'B'}`;
+		}).join('');
+
+		window.localStorage.setItem('checkersData', JSON.stringify({
+			piecesStr,
+			currentPlayer: this.player,
+		}));
 	}
 
 	getBoardLeft(col) {
@@ -88,6 +131,7 @@ class CheckersGame {
 			this.movePiece(this.selectedPiece, move);
 			this.clearSelection();
 			this.changePlayer();
+			this.save();
 		} else {
 			this.clearSelection();
 		}
