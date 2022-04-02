@@ -18,7 +18,7 @@ class Piece {
 		this.game.el.appendChild(this.el);
 	}
 
-	setField(field) {
+	setField(field, attacking) {
 		if (this.field) {
 			this.field.piece = null;
 			this.el.removeAttribute('data-num');
@@ -30,6 +30,14 @@ class Piece {
 			this.el.style.left = this.game.getBoardLeft(field.col);
 			this.el.style.top = this.game.getBoardTop(field.row);
 			this.el.setAttribute('data-num', field.num);
+		}
+
+		if (attacking) {
+			this.el.classList.add('checkers-piece-attack');
+
+			setTimeout(() => {
+				this.el.classList.remove('checkers-piece-attack');
+			}, 350);
 		}
 	}
 
@@ -50,7 +58,15 @@ class Piece {
 			this.field.piece = null;
 			this.field = null;
 		}
-		this.el.parentNode.removeChild(this.el);
+
+		this.el.classList.add('checkers-piece-removing');
+		setTimeout(() => {
+			this.el.classList.add('checkers-piece-remove');
+
+			setTimeout(() => {
+				this.el.parentNode.removeChild(this.el);
+			}, 450);
+		}, 50);
 	}
 }
 

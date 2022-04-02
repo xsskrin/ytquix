@@ -96,7 +96,7 @@ class CheckersGame {
 	movePiece(piece, move) {
 		const { row, col, attacking } = move;
 		const field = this.getField(row, col);
-		piece.setField(field);
+		piece.setField(field, attacking);
 
 		if (attacking) {
 			const attackedField = this.getField(
