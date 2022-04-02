@@ -2,6 +2,7 @@
 
 class Field {
 	constructor(game, row, col) {
+		this.game = game;
 		this.row = row;
 		this.col = col;
 
@@ -15,6 +16,9 @@ class Field {
 		const num = row * game.config.cols + col;
 		this.num = num;
 		this.el.setAttribute('data-num', num);
+
+		this.el.style.left = this.game.getBoardLeft(col);
+		this.el.style.top = this.game.getBoardTop(row);
 	}
 
 	highlight() {

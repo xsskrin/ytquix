@@ -34,6 +34,13 @@ class CheckersGame {
 		this.el.addEventListener('click', this.onClick);
 	}
 
+	getBoardLeft(col) {
+		return col * 100 / this.config.cols + '%';
+	}
+	getBoardTop(row) {
+		return row * 100 / this.config.rows + '%';
+	}
+
 	onClick = (e) => {
 		this.onCurrentClick(e);
 	}
@@ -103,7 +110,6 @@ class CheckersGame {
 	}
 
 	highlightPossibleMoves(fieldNum) {
-
 		const row = Math.floor(fieldNum / this.config.cols);
 		const col = fieldNum % this.config.cols;
 		const otherPlayer = this.player === DARK ? LIGHT : DARK;
@@ -159,7 +165,7 @@ class CheckersGame {
 		const { rows, cols } = this.config;
 		const style = document.createElement('style');
 		style.innerHTML = `
-			.checkers-field {
+			.checkers-field, .checkers-piece {
 				width: ${100 / cols}%;
 				height: ${100 / rows}%;
 			}

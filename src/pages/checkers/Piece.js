@@ -9,18 +9,27 @@ class Piece {
 
 		this.el = document.createElement('div');
 		this.el.className = 'checkers-piece';
-		this.el.className += ` checkers-piece-${colorStr}`;
+
+		this.inner = document.createElement('div');
+		this.inner.className = 'checkers-piece-inner';
+		this.inner.className += ` checkers-piece-${colorStr}`;
+		this.el.appendChild(this.inner);
+
+		this.game.el.appendChild(this.el);
 	}
 
 	setField(field) {
 		if (this.field) {
 			this.field.piece = null;
+			this.el.removeAttribute('data-num');
 		}
 		if (field) {
 			this.field = field;
-			this.field.el.appendChild(this.el);
 			field.piece = this;
 			this.game.piecesByNum[field.num] = this;
+			this.el.style.left = this.game.getBoardLeft(field.col);
+			this.el.style.top = this.game.getBoardTop(field.row);
+			this.el.setAttribute('data-num', field.num);
 		}
 	}
 
