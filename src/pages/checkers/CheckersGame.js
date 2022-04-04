@@ -24,9 +24,11 @@ class CheckersGame {
 		this.fieldsByNum = {};
 		this.piecesByNum = {};
 		this.movesByNum = {};
+		this.diagonals = [];
 
 		this.createFieldStyle();
 		this.createFields();
+		this.calcDiagonals();
 
 		if (!this.load()) {
 			this.createPieces();
@@ -35,6 +37,68 @@ class CheckersGame {
 
 		this.onCurrentClick = this.playerMoveClick;
 		this.el.addEventListener('click', this.onClick);
+	}
+
+	calcDiagonals() {
+		const d = this.diagonals;
+		const { rows, cols } = this.config;
+
+		for (let startRow = 0; startRow < rows; startRow += 2) {
+			let diag = [], field, row = startRow, col = 0;
+			while (field = this.getField(row, col)) {
+				diag.push(field);
+				row -= 1;
+				col += 1;
+			}
+			d.push(diag);
+		}
+		for (let startCol = 1; startCol < cols; startCol += 2) {
+			let diag = [], field, row = rows - 1, col = startCol;
+			while (field = this.getField(row, col)) {
+				diag.push(field);
+				row -= 1;
+				col += 1;
+			}
+			d.push(diag);
+		}
+		for (let startRow = 0; startRow < rows; startRow += 2) {
+			let diag = [], field, row = startRow, col = 0;
+			while (field = this.getField(row, col)) {
+				diag.push(field);
+				row += 1;
+				col += 1;
+			}
+			d.push(diag);
+		}
+		for (let startCol = 2; startCol < cols; startCol += 2) {
+			let diag = [], field, row = 0, col = startCol;
+			while (field = this.getField(row, col)) {
+				diag.push(field);
+				row += 1;
+				col += 1;
+			}
+			d.push(diag);
+		}
+
+		let i = 0, prev;
+		const highlightDiag = () => {
+			if (d[i]) {
+				if (prev) {
+					prev.forEach((field) => {
+						field.unhighlight();
+					});
+				}
+				prev = d[i];
+				d[i].forEach((field) => {
+					field.highlight();
+				});
+
+				i += 1;
+				setTimeout(highlightDiag, 100);
+			}
+		};
+
+		highlightDiag();
 	}
 
 	load() {
