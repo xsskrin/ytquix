@@ -1,5 +1,6 @@
 import Field from './Field';
 import Piece from './Piece';
+import Diagonal from './Diagonal';
 import { DARK, LIGHT } from './consts';
 import { getColorString } from './utils';
 
@@ -46,38 +47,34 @@ class CheckersGame {
 		const { rows, cols } = this.config;
 
 		for (let startRow = 0; startRow < rows; startRow += 2) {
-			let diag = [], field, row = startRow, col = 0;
+			const diag = new Diagonal(this);
+			let field, row = startRow, col = 0;
 			while (field = this.getField(row, col)) {
-				diag.push(field);
-				row -= 1;
-				col += 1;
+				diag.add(field), row -= 1, col += 1;
 			}
 			d.push(diag);
 		}
 		for (let startCol = 1; startCol < cols; startCol += 2) {
-			let diag = [], field, row = rows - 1, col = startCol;
+			const diag = new Diagonal(this);
+			let field, row = rows - 1, col = startCol;
 			while (field = this.getField(row, col)) {
-				diag.push(field);
-				row -= 1;
-				col += 1;
+				diag.add(field), row -= 1, col += 1;
 			}
 			d.push(diag);
 		}
 		for (let startRow = 0; startRow < rows; startRow += 2) {
-			let diag = [], field, row = startRow, col = 0;
+			const diag = new Diagonal(this);
+			let field, row = startRow, col = 0;
 			while (field = this.getField(row, col)) {
-				diag.push(field);
-				row += 1;
-				col += 1;
+				diag.add(field), row += 1, col += 1;
 			}
 			d.push(diag);
 		}
 		for (let startCol = 2; startCol < cols; startCol += 2) {
-			let diag = [], field, row = 0, col = startCol;
+			const diag = new Diagonal(this);
+			let field, row = 0, col = startCol;
 			while (field = this.getField(row, col)) {
-				diag.push(field);
-				row += 1;
-				col += 1;
+				diag.add(field), row += 1, col += 1;
 			}
 			d.push(diag);
 		}
@@ -87,37 +84,8 @@ class CheckersGame {
 		const attacks = [];
 
 		this.diagonals.forEach((diag) => {
-			for (let i = 0, len = diag.length - 2; i < len; i += 1) {
-				const a = diag[i];
-				const b = diag[i + 1];
-				const c = diag[i + 2];
-
-				if (
-					a.piece
-					&& b.piece
-					&& !c.piece
-					&& a.piece.color === this.player
-					&& b.piece.color !== this.player
-				) {
-					attacks.push({
-						from: a,
-						attack: b,
-						to: c,
-					});
-				} else if (
-					!a.piece
-					&& b.piece
-					&& c.piece
-					&& c.piece.color === this.player
-					&& b.piece.color !== this.player
-				) {
-					attacks.push({
-						from: c,
-						attack: b,
-						to: a,
-					});
-				}
-			}
+			const diagAttacks = diag.findAttacks(this.player);
+			attacks.push(...diagAttacks);
 		});
 
 		let i = 0, prev;
@@ -151,14 +119,10 @@ class CheckersGame {
 		const highlightDiag = () => {
 			if (d[i]) {
 				if (prev) {
-					prev.forEach((field) => {
-						field.unhighlight();
-					});
+					prev.unhighlight();
 				}
 				prev = d[i];
-				d[i].forEach((field) => {
-					field.highlight();
-				});
+				d[i].highlight();
 
 				i += 1;
 				setTimeout(highlightDiag, 100);
