@@ -35,6 +35,8 @@ class CheckersGame {
 			this.setPlayer(LIGHT);
 		}
 
+		this.findPossibleAttacks();
+
 		this.onCurrentClick = this.playerMoveClick;
 		this.el.addEventListener('click', this.onClick);
 	}
@@ -79,6 +81,71 @@ class CheckersGame {
 			}
 			d.push(diag);
 		}
+	}
+
+	findPossibleAttacks() {
+		const attacks = [];
+
+		this.diagonals.forEach((diag) => {
+			for (let i = 0, len = diag.length - 2; i < len; i += 1) {
+				const a = diag[i];
+				const b = diag[i + 1];
+				const c = diag[i + 2];
+
+				if (
+					a.piece
+					&& b.piece
+					&& !c.piece
+					&& a.piece.color === this.player
+					&& b.piece.color !== this.player
+				) {
+					attacks.push({
+						from: a,
+						attack: b,
+						to: c,
+					});
+				} else if (
+					!a.piece
+					&& b.piece
+					&& c.piece
+					&& c.piece.color === this.player
+					&& b.piece.color !== this.player
+				) {
+					attacks.push({
+						from: c,
+						attack: b,
+						to: a,
+					});
+				}
+			}
+		});
+
+		let i = 0, prev;
+		const highlight = () => {
+			if (attacks[i]) {
+				if (prev) {
+					prev.from.el.style.removeProperty('border');
+					prev.attack.el.style.removeProperty('border');
+					prev.to.el.style.removeProperty('border');
+				}
+				const a = attacks[i];
+				prev = a;
+				a.from.el.style.border = '2px solid orange';
+				a.attack.el.style.border = '2px solid orange';
+				a.to.el.style.border = '2px solid orange';
+
+				i += 1;
+				setTimeout(() => {
+					highlight();
+				}, 1000);
+			}
+		};
+
+		highlight();
+	}
+
+	highlightDiagonals() {
+		const d = this.diagonals;
 
 		let i = 0, prev;
 		const highlightDiag = () => {
