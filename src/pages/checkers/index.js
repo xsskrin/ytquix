@@ -14,7 +14,11 @@ const Checkers = () => {
 	}, []);
 
 	return (
-		<div className="checkers-wrapper" ref={ref} />
+		<div
+			className="checkers-wrapper"
+			ref={ref}
+			style={{ background: 'black' }}
+		/>
 	);
 };
 

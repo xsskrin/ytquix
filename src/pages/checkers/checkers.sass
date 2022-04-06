@@ -1,3 +1,6 @@
+$lightFieldColor: gold
+$darkFieldColor: darken(gold, 16)
+
 .checkers-wrapper
 	display: flex
 	flex-grow: 1
@@ -12,13 +15,16 @@
 		height: 400px
 		display: flex
 		flex-wrap: wrap
+		border: 20px solid #4f2412
+		box-shadow: 0 0 0 4px gold
 
 	.checkers-field
 		position: absolute
+		box-shadow: 0 0 0 1px rgba(#fff, .25)
 	.checkers-field-dark
-		background: #345
+		background: $darkFieldColor
 	.checkers-field-light
-		background: #eef
+		background: $lightFieldColor
 	.checkers-field-highlight
 		background: gold
 		cursor: pointer
@@ -37,6 +43,23 @@
 		width: 80%
 		height: 80%
 		border-radius: 100%
+		&:after
+			content: ''
+			position: absolute
+			top: 25%
+			left: 25%
+			width: 50%
+			height: 50%
+			border-radius: 100%
+
+	.checkers-piece-dark
+		background: red
+		&:after
+			background: black
+	.checkers-piece-light
+		background: blue
+		&:after
+			background: white
 
 	.checkers-piece-removing
 		z-index: 90
@@ -49,11 +72,6 @@
 
 	.checkers-piece-attack .checkers-piece-inner
 		animation: pieceAttacking .3s linear 1
-
-	.checkers-piece-dark
-		background: red
-	.checkers-piece-light
-		background: blue
 
 	@mixin piece()
 		border: 2px solid #000
