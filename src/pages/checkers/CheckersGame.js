@@ -88,6 +88,10 @@ class CheckersGame {
 			attacks.push(...diagAttacks);
 		});
 
+		return attacks;
+	}
+
+	highlightAttacks(attacks) {
 		let i = 0, prev;
 		const highlight = () => {
 			if (attacks[i]) {
@@ -211,6 +215,9 @@ class CheckersGame {
 		const playerColor = getColorString(this.player);
 		const fieldNum = this.getNum(el);
 
+		const moves = this.getMoves(fieldNum);
+		console.log(moves);
+
 		if (
 			// current player's piece clicked
 			el.classList.contains(`checkers-piece-${playerColor}`)
@@ -230,6 +237,13 @@ class CheckersGame {
 		} else {
 			this.clearSelection();
 		}
+	}
+
+	getMoves(fieldNum) {
+		const piece = this.piecesByNum[fieldNum];
+		if (!piece) return [];
+
+		return piece.getMoves();
 	}
 
 	movePiece(piece, move) {

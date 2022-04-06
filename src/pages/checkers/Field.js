@@ -28,6 +28,20 @@ class Field {
 	unhighlight() {
 		this.el.classList.remove('checkers-field-highlight');
 	}
+
+	getDiagonalField(rowChange, colChange) {
+		return this.game.getField(
+			this.row + rowChange, this.col + colChange,
+		);
+	}
+
+	isEmpty() {
+		return !this.piece;
+	}
+
+	hasPiece(color) {
+		return this.piece && this.piece.color === color;
+	}
 }
 
 export default Field;

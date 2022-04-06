@@ -1,4 +1,5 @@
 import { getColorString } from './utils';
+import { DARK, LIGHT } from './consts';
 
 class Piece {
 	constructor(game, color) {
@@ -69,6 +70,41 @@ class Piece {
 				this.el.parentNode.removeChild(this.el);
 			}, 450);
 		}, 50);
+	}
+
+	getMoves() {
+		if (!this.field) return [];
+
+		const f = this.field;
+		const moves = [];
+
+		const checkMoves = (rowChange, colChange, otherColor) => {
+			const diagField = f.getDiagonalField(rowChange, colChange);
+			if (diagField) {
+				if (diagField.isEmpty()) {
+					moves.push({ to: diagField });
+				} else if (diagField.hasPiece(otherColor)) {
+					const diagField2 = f.getDiagonalField(
+						rowChange * 2, colChange * 2
+					);
+					if (diagField2.isEmpty()) {
+						moves.push({ to: diagField2, attack: diagField });
+					}
+				}
+			}
+		};
+
+		if (this.isQueen) {
+			// for later
+		} else if (this.color === DARK) {
+			checkMoves(1, 1, LIGHT);
+			checkMoves(1, -1, LIGHT);
+		} else if (this.color === LIGHT) {
+			checkMoves(-1, 1, DARK);
+			checkMoves(-1, -1, DARK);
+		}
+
+		return moves;
 	}
 }
 
