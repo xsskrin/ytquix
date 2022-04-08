@@ -2,7 +2,7 @@ import Field from './Field';
 import Piece from './Piece';
 import Diagonal from './Diagonal';
 import { DARK, LIGHT } from './consts';
-import { getColorString } from './utils';
+import { getColorString, iterateTimeout } from './utils';
 
 class CheckersGame {
 	constructor(container, config) {
@@ -40,6 +40,8 @@ class CheckersGame {
 
 		this.onCurrentClick = this.playerMoveClick;
 		this.el.addEventListener('click', this.onClick);
+
+		this.highlightDiagonals();
 	}
 
 	calcDiagonals() {
@@ -117,23 +119,10 @@ class CheckersGame {
 	}
 
 	highlightDiagonals() {
-		const d = this.diagonals;
-
-		let i = 0, prev;
-		const highlightDiag = () => {
-			if (d[i]) {
-				if (prev) {
-					prev.unhighlight();
-				}
-				prev = d[i];
-				d[i].highlight();
-
-				i += 1;
-				setTimeout(highlightDiag, 100);
-			}
-		};
-
-		highlightDiag();
+		iterateTimeout(this.diagonals, (current, prev) => {
+			if (prev) prev.unhighlight();
+			current.highlight();
+		}, 200);
 	}
 
 	load() {
