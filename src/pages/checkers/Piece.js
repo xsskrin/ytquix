@@ -72,6 +72,15 @@ class Piece {
 		}, 50);
 	}
 
+	setSelectable(selectable) {
+		this.selectable = selectable;
+		if (selectable) {
+			this.el.classList.add('checkers-piece-selectable');
+		} else {
+			this.el.classList.remove('checkers-piece-selectable');
+		}
+	}
+
 	getMoves() {
 		if (!this.field) return [];
 
@@ -82,13 +91,13 @@ class Piece {
 			const diagField = f.getDiagonalField(rowChange, colChange);
 			if (diagField) {
 				if (diagField.isEmpty()) {
-					moves.push({ to: diagField });
+					moves.push({ from: f, to: diagField });
 				} else if (diagField.hasPiece(otherColor)) {
 					const diagField2 = f.getDiagonalField(
 						rowChange * 2, colChange * 2
 					);
-					if (diagField2.isEmpty()) {
-						moves.push({ to: diagField2, attack: diagField });
+					if (diagField2 && diagField2.isEmpty()) {
+						moves.push({ from: f, to: diagField2, attack: diagField });
 					}
 				}
 			}
@@ -102,6 +111,43 @@ class Piece {
 		} else if (this.color === LIGHT) {
 			checkMoves(-1, 1, DARK);
 			checkMoves(-1, -1, DARK);
+		}
+
+		return moves;
+	}
+
+	getAttacks() {
+		if (!this.field) return [];
+
+		const f = this.field;
+		const moves = [];
+
+		const checkAttack = (rowChange, colChange, otherColor) => {
+			const diagField = f.getDiagonalField(rowChange, colChange);
+			if (diagField) {
+				if (diagField.hasPiece(otherColor)) {
+					const diagField2 = f.getDiagonalField(
+						rowChange * 2, colChange * 2
+					);
+					if (diagField2 && diagField2.isEmpty()) {
+						moves.push({ from: f, to: diagField2, attack: diagField });
+					}
+				}
+			}
+		};
+
+		if (this.isQueen) {
+			// for later
+		} else if (this.color === DARK) {
+			checkAttack(1, 1, LIGHT);
+			checkAttack(1, -1, LIGHT);
+			checkAttack(-1, 1, LIGHT);
+			checkAttack(-1, -1, LIGHT);
+		} else if (this.color === LIGHT) {
+			checkAttack(1, 1, DARK);
+			checkAttack(1, -1, DARK);
+			checkAttack(-1, 1, DARK);
+			checkAttack(-1, -1, DARK);
 		}
 
 		return moves;

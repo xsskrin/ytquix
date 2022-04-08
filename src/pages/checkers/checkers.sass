@@ -11,8 +11,6 @@ $darkFieldColor: darken(gold, 16)
 	.checkers-board
 		position: relative
 		background: #fff
-		width: 400px
-		height: 400px
 		display: flex
 		flex-wrap: wrap
 		border: 20px solid #4f2412
@@ -52,6 +50,17 @@ $darkFieldColor: darken(gold, 16)
 			height: 50%
 			border-radius: 100%
 
+	.checkers-piece-selectable .checkers-piece-inner
+		border: 2px solid #000
+		cursor: pointer
+		&:hover
+			border: 2px solid green
+
+	.checkers-piece-selected .checkers-piece-inner
+		cursor: default
+		background: green
+		border: 2px solid green
+
 	.checkers-piece-dark
 		background: red
 		&:after
@@ -73,23 +82,11 @@ $darkFieldColor: darken(gold, 16)
 	.checkers-piece-attack .checkers-piece-inner
 		animation: pieceAttacking .3s linear 1
 
-	@mixin piece()
-		border: 2px solid #000
-		cursor: pointer
-		&:hover
-			border: 2px solid gold
-		&.checkers-piece-selected
-			cursor: default
-			background: gold
-			border: 2px solid gold
-
 	.checkers--player_DARK
 		.checkers-piece-dark
-			+piece
 
 	.checkers--player_LIGHT
 		.checkers-piece-light
-			+piece
 
 @keyframes pieceAttacking
 	0%
