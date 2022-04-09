@@ -29,7 +29,7 @@ powers.earth = {
 	icon: earthSvg,
 };
 powers.wind = {
-	color: '#553361',
+	color: '#a55eea',
 	icon: windSvg,
 };
 

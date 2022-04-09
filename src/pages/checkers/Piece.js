@@ -2,19 +2,24 @@ import { getColorString } from './utils';
 import { DARK, LIGHT } from './consts';
 
 class Piece {
-	constructor(game, color) {
+	constructor(game, color, attrs) {
 		this.game = game;
 		this.color = color;
+		const a = this.attrs = (attrs && typeof attrs === 'object') ? attrs : {};
 
 		const colorStr = getColorString(color);
 
 		this.el = document.createElement('div');
 		this.el.className = 'checkers-piece';
+		this.el.className += ` checkers-piece-${colorStr}`;
 
 		this.inner = document.createElement('div');
 		this.inner.className = 'checkers-piece-inner';
-		this.inner.className += ` checkers-piece-${colorStr}`;
 		this.el.appendChild(this.inner);
+
+		if (a.isQueen) {
+			this.makeQueen();
+		}
 
 		this.game.el.appendChild(this.el);
 		this.game.pieceCounts[color] += 1;
@@ -109,31 +114,37 @@ class Piece {
 
 		const f = this.field;
 		const moves = [];
+		const otherColor = this.color === DARK ? LIGHT : DARK;
 
-		const checkMoves = (rowChange, colChange, otherColor) => {
+		const checkMoves = (rowChange, colChange) => {
 			const diagField = f.getDiagonalField(rowChange, colChange);
-			if (diagField) {
+			if (diagField && diagField.isEmpty()) {
+				moves.push({ from: f, to: diagField });
+			}
+		};
+
+		const checkQueenMoves = (rowChange, colChange) => {
+			let diagField = f, prev;
+			while (diagField = diagField.getDiagonalField(rowChange, colChange)) {
 				if (diagField.isEmpty()) {
 					moves.push({ from: f, to: diagField });
-				} else if (diagField.hasPiece(otherColor)) {
-					const diagField2 = f.getDiagonalField(
-						rowChange * 2, colChange * 2
-					);
-					if (diagField2 && diagField2.isEmpty()) {
-						moves.push({ from: f, to: diagField2, attack: diagField });
-					}
+				} else {
+					break;
 				}
 			}
 		};
 
 		if (this.isQueen) {
-			// for later
+			checkQueenMoves(1, 1);
+			checkQueenMoves(1, -1);
+			checkQueenMoves(-1, 1);
+			checkQueenMoves(-1, -1);
 		} else if (this.color === DARK) {
-			checkMoves(1, 1, LIGHT);
-			checkMoves(1, -1, LIGHT);
+			checkMoves(1, 1);
+			checkMoves(1, -1);
 		} else if (this.color === LIGHT) {
-			checkMoves(-1, 1, DARK);
-			checkMoves(-1, -1, DARK);
+			checkMoves(-1, 1);
+			checkMoves(-1, -1);
 		}
 
 		return moves;
@@ -144,8 +155,9 @@ class Piece {
 
 		const f = this.field;
 		const moves = [];
+		const otherColor = this.color === DARK ? LIGHT : DARK;
 
-		const checkAttack = (rowChange, colChange, otherColor) => {
+		const checkAttack = (rowChange, colChange) => {
 			const diagField = f.getDiagonalField(rowChange, colChange);
 			if (diagField) {
 				if (diagField.hasPiece(otherColor)) {
@@ -159,21 +171,45 @@ class Piece {
 			}
 		};
 
+		const checkQueenAttack = (rowChange, colChange) => {
+			let diagField = f;
+			while (diagField = diagField.getDiagonalField(rowChange, colChange)) {
+				if (diagField.hasPiece(this.color)) {
+					break;
+				}
+				if (diagField.hasPiece(otherColor)) {
+					let diagField2 = diagField;
+					while (diagField2 = diagField2.getDiagonalField(rowChange, colChange)) {
+						if (diagField2.isEmpty()) {
+							moves.push({
+								from: f, to: diagField2, attack: diagField,
+							});
+						} else {
+							return;
+						}
+					}
+				}
+			}
+		};
+
 		if (this.isQueen) {
-			// for later
-		} else if (this.color === DARK) {
-			checkAttack(1, 1, LIGHT);
-			checkAttack(1, -1, LIGHT);
-			checkAttack(-1, 1, LIGHT);
-			checkAttack(-1, -1, LIGHT);
-		} else if (this.color === LIGHT) {
-			checkAttack(1, 1, DARK);
-			checkAttack(1, -1, DARK);
-			checkAttack(-1, 1, DARK);
-			checkAttack(-1, -1, DARK);
+			checkQueenAttack(1, 1);
+			checkQueenAttack(1, -1);
+			checkQueenAttack(-1, 1);
+			checkQueenAttack(-1, -1);
+		} else {
+			checkAttack(1, 1);
+			checkAttack(1, -1);
+			checkAttack(-1, 1);
+			checkAttack(-1, -1);
 		}
 
 		return moves;
+	}
+
+	makeQueen() {
+		this.isQueen = true;
+		this.el.classList.add('checkers-piece-queen');
 	}
 }
 
