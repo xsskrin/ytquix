@@ -1,28 +1,36 @@
 $lightFieldColor: gold
 $darkFieldColor: gold
+$ringWidth: 14px
+$selectRingWidth: 4px
+
+.checkers-arena
+	display: flex
+	flex-grow: 1
 
 .checkers-wrapper
 	display: flex
 	flex-grow: 1
-	flex-direction: column
 	overflow: auto
+	background: #000
 
 	.checkers-board
 		margin: auto auto
 		position: relative
-		background: #fff
-		border: 20px solid #4f2412
+		background: #000
+		border: 20px solid #000
 		box-shadow: 0 0 0 4px gold
 		flex-shrink: 0
-		// transform: rotate(90deg)
+		transform: rotate(90deg)
 
 	.checkers-field
 		position: absolute
-		box-shadow: 0 0 0 1px rgba(#fff, .25)
+		transform: rotate(-90deg)
 	.checkers-field-dark
 		background: $darkFieldColor
+		transform: scale(.65)
 	.checkers-field-light
 		background: $lightFieldColor
+		z-index: 10
 	.checkers-field-highlight
 		background: green
 		cursor: pointer
@@ -49,32 +57,38 @@ $darkFieldColor: gold
 	.checkers-piece
 		position: absolute
 		z-index: 100
-		opacity: .75
 		transition: top .3s, left .3s
 
 	.checkers-piece-inner
 		position: relative
-		top: 6%
-		left: 6%
-		width: 88%
-		height: 88%
+		top: 8%
+		left: 8%
+		width: 84%
+		height: 84%
 		border-radius: 100%
 
-	.checkers-piece-selectable
-		opacity: 1
-
-		.checkers-piece-inner
-			cursor: pointer
-			box-shadow: 0 0 5px gold
+	.checkers-piece-selectable .checkers-piece-inner
+		cursor: pointer
+		&:after
+			content: ''
+			position: absolute
+			top: -#{ $ringWidth - $selectRingWidth }
+			left: -#{ $ringWidth - $selectRingWidth }
+			border: $selectRingWidth solid gold
+			border-radius: 100%
+			width: calc(100% + #{ $ringWidth - $selectRingWidth / 2 })
+			height: calc(100% + #{ $ringWidth - $selectRingWidth / 2 })
 
 	.checkers-piece-selected .checkers-piece-inner
 		cursor: default
-		box-shadow: 0 0 40px 3px gold
+		box-shadow: 0 0 80px 3px gold
 
 	.checkers-piece-dark
-		border: 16px solid #000
+		border: $ringWidth solid #000
 	.checkers-piece-light
-		border: 16px solid #fff
+		border: $ringWidth solid #fff
+		&.checkers-piece-selectable:after
+			border: 2px solid darken(gold, 24)
 
 	.checkers-piece-power
 		position: absolute
@@ -82,8 +96,9 @@ $darkFieldColor: gold
 		left: 0
 		width: 100%
 		height: 100%
-		opacity: .75
+		opacity: 1
 		border-radius: 100%
+		transform: rotate(-90deg)
 
 	.checkers-piece-removing
 		z-index: 90
@@ -129,7 +144,8 @@ $darkFieldColor: gold
 .checkers-menu
 	position: absolute
 	top: 70px
-	left: 10px
+	left: 50%
+	transform: translateX(-50%)
 
 	.checkers-button
 		padding: 8px 16px
@@ -143,18 +159,16 @@ $darkFieldColor: gold
 	background: #333
 
 .checkers-player-panel
-	width: 50%
+	width: 240px
 	padding: 16px
 	font-weight: bold
 	font-size: 1.4em
 	text-align: center
+	background: #3f2412
+	color: gold
 
 	&.checkers-player-panel-white
-		background: #fff
-		color: #000
 	&.checkers-player-panel-black
-		background: #000
-		color: #fff
 
 	.checkers-player-powers
 		display: flex

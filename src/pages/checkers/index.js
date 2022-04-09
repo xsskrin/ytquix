@@ -27,16 +27,13 @@ const Checkers = () => {
 					Reset
 				</div>
 			</div>
-			<div
-				className="checkers-wrapper"
-				ref={ref}
-				style={{ background: '#333' }}
-			/>
-			<div
-				className="checkers-players"
-			>
+			<div className="checkers-arena">
 				<PlayerPanel
 					color="white" player={1} game={gameRef.current}
+				/>
+				<div
+					className="checkers-wrapper"
+					ref={ref}
 				/>
 				<PlayerPanel
 					color="black" player={2} game={gameRef.current}

@@ -92,6 +92,15 @@ class Piece {
 		this.powerEl.className = 'checkers-piece-power';
 		this.powerEl.style.background = power.color;
 
+		if (power.icon) {
+			const svg = document.createElement('div');
+			svg.innerHTML = power.icon;
+			svg.style.margin = '6px';
+			svg.style.opacity = '.5';
+			svg.style.webkitFilter = 'brightness(0)';
+			this.powerEl.appendChild(svg);
+		}
+
 		this.inner.appendChild(this.powerEl);
 	}
 
