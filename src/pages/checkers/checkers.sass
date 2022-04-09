@@ -1,20 +1,20 @@
 $lightFieldColor: gold
-$darkFieldColor: darken(gold, 16)
+$darkFieldColor: gold
 
 .checkers-wrapper
 	display: flex
 	flex-grow: 1
 	flex-direction: column
-	align-items: center
-	justify-content: center
+	overflow: auto
 
 	.checkers-board
+		margin: auto auto
 		position: relative
 		background: #fff
-		display: flex
-		flex-wrap: wrap
 		border: 20px solid #4f2412
 		box-shadow: 0 0 0 4px gold
+		flex-shrink: 0
+		// transform: rotate(90deg)
 
 	.checkers-field
 		position: absolute
@@ -26,49 +26,64 @@ $darkFieldColor: darken(gold, 16)
 	.checkers-field-highlight
 		background: green
 		cursor: pointer
-		&:hover
-			border: 2px solid #000
+		&:after
+			content: ''
+			pointer-events: none
+			box-shadow: 0 0 0 4px transparent inset
+			transition: box-shadow .2s
+		&:hover:after
+			position: absolute
+			top: 0
+			left: 0
+			width: 100%
+			height: 100%
+			box-shadow: 0 0 0 4px #000 inset
+
+	.checkers-field-power
+		position: absolute
+		top: 0
+		left: 0
+		width: 100%
+		height: 100%
 
 	.checkers-piece
 		position: absolute
 		z-index: 100
+		opacity: .75
 		transition: top .3s, left .3s
 
 	.checkers-piece-inner
 		position: relative
-		top: 10%
-		left: 10%
-		width: 80%
-		height: 80%
+		top: 6%
+		left: 6%
+		width: 88%
+		height: 88%
 		border-radius: 100%
-		&:after
-			content: ''
-			position: absolute
-			top: 25%
-			left: 25%
-			width: 50%
-			height: 50%
-			border-radius: 100%
 
-	.checkers-piece-selectable .checkers-piece-inner
-		border: 2px solid #000
-		cursor: pointer
-		&:hover
-			border: 2px solid green
+	.checkers-piece-selectable
+		opacity: 1
+
+		.checkers-piece-inner
+			cursor: pointer
+			box-shadow: 0 0 5px gold
 
 	.checkers-piece-selected .checkers-piece-inner
 		cursor: default
-		background: green
-		border: 2px solid green
+		box-shadow: 0 0 40px 3px gold
 
 	.checkers-piece-dark
-		background: red
-		&:after
-			background: black
+		border: 16px solid #000
 	.checkers-piece-light
-		background: blue
-		&:after
-			background: white
+		border: 16px solid #fff
+
+	.checkers-piece-power
+		position: absolute
+		top: 0
+		left: 0
+		width: 100%
+		height: 100%
+		opacity: .75
+		border-radius: 100%
 
 	.checkers-piece-removing
 		z-index: 90
@@ -95,3 +110,70 @@ $darkFieldColor: darken(gold, 16)
 		transform: scale(1.5)
 	100%
 		transform: scale(1)
+
+.checkers-end
+	position: absolute
+	z-index: 100
+	top: 50%
+	left: 50%
+	width: 100%
+	background: rgba(#000, .5)
+	padding: 32px
+	font-size: 4em
+	color: #fff
+	transform: translateX(-50%) translateY(-50%)
+	text-align: center
+	font-weight: bold
+	text-shadow: 1px 1px 2px rgba(#000, .5)
+
+.checkers-menu
+	position: absolute
+	top: 70px
+	left: 10px
+
+	.checkers-button
+		padding: 8px 16px
+		border-radius: 4px
+		background: #fff
+		font-size: 1.6em
+		cursor: pointer
+
+.checkers-players
+	display: flex
+	background: #333
+
+.checkers-player-panel
+	width: 50%
+	padding: 16px
+	font-weight: bold
+	font-size: 1.4em
+	text-align: center
+
+	&.checkers-player-panel-white
+		background: #fff
+		color: #000
+	&.checkers-player-panel-black
+		background: #000
+		color: #fff
+
+	.checkers-player-powers
+		display: flex
+		gap: 8px
+		margin-top: 16px
+
+	.checkers-player-power
+		width: 40px
+		height: 40px
+		border-radius: 100%
+		cursor: pointer
+
+	.checkers-player-power-bg
+		width: 100%
+		height: 100%
+		border-radius: 100%
+		opacity: .5
+
+	.checkers-player-power-fill
+		width: 100%
+		border-radius: 100%
+		opacity: .5

@@ -17,6 +17,7 @@ class Piece {
 		this.el.appendChild(this.inner);
 
 		this.game.el.appendChild(this.el);
+		this.game.pieceCounts[color] += 1;
 	}
 
 	setField(field, attacking) {
@@ -57,6 +58,8 @@ class Piece {
 
 	remove() {
 		if (this.field) {
+			this.game.pieceCounts[this.color] -= 1;
+
 			delete this.game.piecesByNum[this.field.num];
 			this.field.piece = null;
 			this.field = null;
@@ -79,6 +82,17 @@ class Piece {
 		} else {
 			this.el.classList.remove('checkers-piece-selectable');
 		}
+	}
+
+	setPower(power) {
+		this.power = power;
+		this.el.classList.add(`checkers-piece-power-${power.name}`);
+
+		this.powerEl = document.createElement('div');
+		this.powerEl.className = 'checkers-piece-power';
+		this.powerEl.style.background = power.color;
+
+		this.inner.appendChild(this.powerEl);
 	}
 
 	getMoves() {

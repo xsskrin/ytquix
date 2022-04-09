@@ -25,3 +25,13 @@ export const iterateTimeout = (arr, callback, stepTime) => {
 		}
 	};
 };
+
+export const isChildOf = (el, className) => {
+	while (el) {
+		if (el.classList && el.classList.contains(className)) {
+			return true;
+		}
+		el = el.parentNode;
+	}
+	return false;
+};
