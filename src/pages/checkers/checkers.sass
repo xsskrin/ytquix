@@ -1,52 +1,64 @@
 $lightFieldColor: gold
 $darkFieldColor: gold
 $ringWidth: 14px
-$selectRingOffset: 4px
-$selectRingWidth: 4px
+$selectRingOffset: 2px
+$selectRingWidth: 6px
 $piecePowerSize: 20px
 
 .checkers-arena
 	display: flex
+	flex-direction: column
 	flex-grow: 1
+	min-height: 0
 
 .checkers-wrapper
 	display: flex
 	flex-grow: 1
 	overflow: auto
 	background: #000
+	padding: 20px
 
 	.checkers-board
-		margin: auto auto
+		margin: auto
 		position: relative
 		background: #000
 		border: 20px solid #000
-		box-shadow: 0 0 0 4px gold
 		flex-shrink: 0
 		transform: rotate(90deg)
+
+		&:after
+			content: ''
+			position: absolute
+			top: -20px
+			left: -20px
+			width: calc(100% + 40px)
+			height: calc(100% + 40px)
+			pointer-events: none
+			box-shadow: 0 0 0 4px gold inset
 
 	.checkers-field
 		position: absolute
 		transform: rotate(-90deg)
 	.checkers-field-dark
 		background: $darkFieldColor
-		transform: scale(.65)
+		transform: scale(.5)
+		border-radius: 4px
 	.checkers-field-light
 		background: $lightFieldColor
 		z-index: 10
 	.checkers-field-highlight
-		background: green
 		cursor: pointer
 		&:after
 			content: ''
-			pointer-events: none
-			box-shadow: 0 0 0 4px transparent inset
-		&:hover:after
 			position: absolute
+			pointer-events: none
 			top: 2px
 			left: 2px
 			width: calc(100% - 4px)
 			height: calc(100% - 4px)
-			box-shadow: 0 0 0 4px #000 inset
+			box-shadow: 0 0 0 6px #000 inset
+		&:hover:after
+			box-shadow: 0 0 0 6px gold inset
 
 	.checkers-field-power
 		position: absolute
@@ -58,6 +70,7 @@ $piecePowerSize: 20px
 	.checkers-piece
 		position: absolute
 		z-index: 100
+		transform: rotate(-90deg)
 		transition: top .3s, left .3s
 
 	.checkers-piece-inner
@@ -100,13 +113,12 @@ $piecePowerSize: 20px
 
 	.checkers-piece-power
 		position: absolute
-		top: 14px
-		left: 14px
-		width: calc(100% - 28px)
-		height: calc(100% - 28px)
+		top: 30%
+		left: 30%
+		width: 40%
+		height: 40%
 		opacity: 1
 		border-radius: 100%
-		transform: rotate(-90deg)
 
 	.checkers-piece-selected
 
@@ -133,6 +145,15 @@ $piecePowerSize: 20px
 	.checkers-piece-attack .checkers-piece-inner
 		animation: pieceAttacking .3s linear 1
 
+	.checkers-piece-highlight-power
+
+		.checkers-piece-inner
+			background: gold
+
+		.checkers-piece-power
+			transform: scale(1.6)
+
+
 @keyframes pieceAttacking
 	0%
 		transform: scale(1)
@@ -158,16 +179,34 @@ $piecePowerSize: 20px
 
 .checkers-menu
 	position: absolute
-	top: 70px
-	left: 50%
-	transform: translateX(-50%)
+	top: 14px
+	right: 14px
 
-	.checkers-button
-		padding: 8px 16px
-		border-radius: 4px
-		background: #fff
-		font-size: 1.6em
+	.checkers-menu-cog
+		font-size: 2em
+		font-weight: bold
 		cursor: pointer
+
+	.checkers-menu-panel
+		position: absolute
+		z-index: 100
+		top: calc(100% + 8px)
+		right: -8px
+		background: black
+		border: 1px solid gold
+		padding: 8px
+		border-radius: 4px
+		cursor: pointer
+		width: 200px
+
+	.checkers-menu-button
+		font-size: 1.6em
+		font-weight: bold
+		text-transform: uppercase
+		background: #fff
+		padding: 6px 16px
+		border-radius: 4px
+		text-align: center
 
 .checkers-players
 	display: flex
@@ -211,3 +250,28 @@ $piecePowerSize: 20px
 		width: 100%
 		border-radius: 100%
 		opacity: .5
+
+
+.checkers-display
+	display: flex
+	flex-direction: column
+	align-items: center
+	justify-content: center
+	width: 100%
+	height: 100px
+	padding: 16px
+	background: #000
+	color: #fff
+	font-weight: bold
+	text-align: center
+
+	.checkers-display-player
+		font-size: 2.4em
+
+	.checkers-display-info
+		font-size: 1.8em
+
+	&.checkers-display-show-info
+
+		.checkers-display-info
+			margin-top: 8px

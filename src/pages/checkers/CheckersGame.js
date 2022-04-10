@@ -1,5 +1,6 @@
 import Field from './Field';
 import Piece from './Piece';
+import Display from './Display';
 import Diagonal from './Diagonal';
 import { DARK, LIGHT } from './consts';
 import { getColorString, iterateTimeout, isChildOf } from './utils';
@@ -11,7 +12,7 @@ class CheckersGame {
 		this.config = {
 			rows: 8,
 			cols: 8,
-			fillRows: 2,
+			fillRows: 3,
 			fieldSize: 80,
 		};
 
@@ -34,6 +35,12 @@ class CheckersGame {
 		this.calcDiagonals();
 		this.enhanceFields();
 
+		this.display = new Display(this);
+		this.display.update();
+		this.container.parentNode.insertBefore(
+			this.display.el, this.container.parentNode.children[0],
+		);
+
 		this.pieceCounts = {
 			[DARK]: 0,
 			[LIGHT]: 0,
@@ -42,9 +49,8 @@ class CheckersGame {
 		if (!this.load()) {
 			this.createPieces();
 			this.setPlayer(LIGHT);
+			this.enhancePieces();
 		}
-
-		this.enhancePieces();
 
 		this.el.addEventListener('click', this.onClick);
 
@@ -68,6 +74,7 @@ class CheckersGame {
 	reset() {
 		window.localStorage.removeItem('checkersData');
 		this.clear();
+		this.setPlayer(LIGHT);
 		this.initialize();
 	}
 
@@ -95,6 +102,8 @@ class CheckersGame {
 	}
 
 	endGame(winner) {
+		this.clearSelection();
+
 		const end = this.endEl = document.createElement('div');
 		end.innerHTML = `${winner} won!<br/>Congrats!`;
 		end.className = 'checkers-end';
@@ -103,19 +112,29 @@ class CheckersGame {
 
 	gameStep() {
 		this.resetSelectable();
+		this.clearSelection();
 
 		if (this.pieceCounts[LIGHT] === 0) {
 			this.endGame(DARK);
 		} else if (this.pieceCounts[DARK] === 0) {
 			this.endGame(LIGHT);
 		} else {
+			const cmp = this.currentMovingPiece;
 			const cap = this.currentAttackingPiece;
+
 			if (cap) {
+				cap.select();
+			}
+
+			if (cmp && cmp.power && cmp.power === cmp.field.power) {
+				this.runPower(cmp);
+			} else if (cap) {
 				const attacks = this.getAttacks(cap.field.num);
 
 				if (attacks.length) {
+					this.moves = attacks;
+
 					attacks.forEach((a) => {
-						a.from.piece.setSelectable(true);
 						this.movesByNum[a.to.num] = a;
 						a.to.highlight();
 					});
@@ -131,20 +150,36 @@ class CheckersGame {
 				const attacks = this.findPossibleAttacks();
 
 				if (attacks.length) {
+					this.moves = attacks;
+
 					attacks.forEach((a) => {
 						a.from.piece.setSelectable(true);
 					});
 
 					this.currentOnClick = this.playerAttackClick;
 				} else {
-					this.eachPiece((p) => {
-						if (p.color === this.player) {
-							p.setSelectable(true);
-						}
-					});
-					this.currentOnClick = this.playerMoveClick;
+					const moves = this.findPossibleMoves();
+
+					if (!moves.length) {
+						this.endGame(this.getOtherPlayer());
+					} else {
+						this.moves = moves;
+
+						moves.forEach((m) => {
+							m.from.piece.setSelectable(true);
+						});
+
+						this.currentOnClick = this.playerMoveClick;
+					}
 				}
 			}
+		}
+	}
+
+	runPower(piece) {
+		if (piece.power) {
+			piece.highlightPower();
+			piece.power.activate(this, piece);
 		}
 	}
 
@@ -161,52 +196,19 @@ class CheckersGame {
 		}
 	}
 
-	playerAttackClick(e) {
+	playerAttackClick(e, num) {
 		const el = e.target;
-		const fieldNum = this.getNum(el);
-
-		if (!this.currentAttackingPiece) {
-			if (
-				// current player's piece clicked
-				isChildOf(el, 'checkers-piece-selectable')
-				&& isChildOf(el, 'checkers-piece-inner')
-			) {
-				this.clearSelection();
-				this.piecesByNum[fieldNum].select();
-
-				this.moves = this.getAttacks(fieldNum);
-				this.moves.forEach((m) => {
-					this.movesByNum[m.to.num] = m;
-					m.to.highlight();
-				});
-			} else if (
-				// highlighted field clicked
-				isChildOf(el, 'checkers-field-highlight')
-			) {
-				const move = this.movesByNum[fieldNum];
-				this.currentAttackingPiece = move.from.piece;
-				this.runMove(move);
-				this.save();
-				this.gameStep();
-			} else {
-				this.clearSelection();
-			}
-		}
-	}
-
-	playerMoveClick(e) {
-		const el = e.target;
-		const fieldNum = this.getNum(el);
 
 		if (
 			// current player's piece clicked
-			isChildOf(el, 'checkers-piece-selectable')
+			!this.currentAttackingPiece
+			&& isChildOf(el, 'checkers-piece-selectable')
 			&& isChildOf(el, 'checkers-piece-inner')
 		) {
 			this.clearSelection();
-			this.piecesByNum[fieldNum].select();
+			this.piecesByNum[num].select();
 
-			this.moves = this.getMoves(fieldNum);
+			this.moves = this.getAttacks(num);
 			this.moves.forEach((m) => {
 				this.movesByNum[m.to.num] = m;
 				m.to.highlight();
@@ -215,7 +217,47 @@ class CheckersGame {
 			// highlighted field clicked
 			isChildOf(el, 'checkers-field-highlight')
 		) {
-			const move = this.movesByNum[fieldNum];
+			const move = this.movesByNum[num];
+			this.currentAttackingPiece = move.from.piece;
+			this.currentMovingPiece = move.from.piece;
+			this.runMove(move);
+			this.save();
+			this.gameStep();
+		} else if (!this.currentAttackingPiece) {
+			this.clearSelection();
+		}
+	}
+
+	afterPowerUse(piece) {
+		this.display.clearInfo();
+		piece.unhighlightPower();
+		this.currentMovingPiece = null;
+		this.save();
+		this.gameStep();
+	}
+
+	playerMoveClick(e, num) {
+		const el = e.target;
+
+		if (
+			// current player's piece clicked
+			isChildOf(el, 'checkers-piece-selectable')
+			&& isChildOf(el, 'checkers-piece-inner')
+		) {
+			this.clearSelection();
+			this.piecesByNum[num].select();
+
+			this.moves = this.getMoves(num);
+			this.moves.forEach((m) => {
+				this.movesByNum[m.to.num] = m;
+				m.to.highlight();
+			});
+		} else if (
+			// highlighted field clicked
+			isChildOf(el, 'checkers-field-highlight')
+		) {
+			const move = this.movesByNum[num];
+			this.currentMovingPiece = move.from.piece;
 			this.runMove(move);
 			this.clearSelection();
 			this.changePlayer();
@@ -277,6 +319,19 @@ class CheckersGame {
 		return attacks;
 	}
 
+	findPossibleMoves() {
+		const moves = [];
+
+		this.eachPiece((p) => {
+			if (p.color === this.player) {
+				const m = p.getMoves();
+				moves.push(...m);
+			}
+		});
+
+		return moves;
+	}
+
 	highlightAttacks(attacks) {
 		const keys = ['from', 'attack', 'to'];
 		iterateTimeout(attacks, (current, prev) => {
@@ -305,16 +360,23 @@ class CheckersGame {
 
 		if (!data) return false;
 
+		const powerSigns = Object.values(powers).map((p) => p.sign);
+
 		const { piecesStr, currentPlayer } = data;
 		let num = '', c;
 		for (let i = 0, len = piecesStr.length; i < len; i += 1) {
 			c = piecesStr[i];
 			if (c === 'A' || c === 'B') {
 				const isQueen = piecesStr[i + 1] === 'Q';
+				let powerSign = piecesStr[i + 2];
+				if (!powerSigns.some((ps) => ps === powerSign)) {
+					powerSign = null;
+				}
 				const piece = new Piece(this, c === 'A' ? DARK : LIGHT, {
 					isQueen,
+					powerSign,
 				});
-				if (isQueen) i += 1;
+				i += 2;
 				const field = this.fieldsByNum[num];
 				piece.setField(field);
 				num = '';
@@ -332,7 +394,11 @@ class CheckersGame {
 		const pbn = this.piecesByNum;
 		const piecesStr = Object.keys(pbn).map((num) => {
 			const p = pbn[num];
-			return `${num}${p.color === DARK ? 'A' : 'B'}${p.isQueen ? 'Q' : ''}`;
+			let str = num;
+			str += p.color === DARK ? 'A' : 'B';
+			str += p.isQueen ? 'Q' : '_';
+			str += p.power ? p.power.sign : '_';
+			return str;
 		}).join('');
 
 		window.localStorage.setItem('checkersData', JSON.stringify({
@@ -468,6 +534,7 @@ class CheckersGame {
 
 	changePlayer() {
 		this.setPlayer(this.getOtherPlayer());
+		this.display.update();
 	}
 
 	getOtherPlayer() {
@@ -490,6 +557,10 @@ class CheckersGame {
 		if (this.fieldStyle) {
 			this.fieldStyle.parentNode.removeChild(this.fieldStyle);
 			this.fieldStyle = null;
+		}
+		if (this.display) {
+			this.display.remove();
+			this.display = null;
 		}
 	}
 }

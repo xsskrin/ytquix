@@ -55,7 +55,7 @@ class Field {
 		if (power.icon) {
 			const svg = document.createElement('div');
 			svg.innerHTML = power.icon;
-			svg.style.margin = '16px';
+			svg.style.margin = '25%';
 			svg.style.opacity = '.5';
 			svg.style.webkitFilter = 'brightness(0)';
 			this.powerEl.appendChild(svg);

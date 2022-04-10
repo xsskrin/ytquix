@@ -1,5 +1,6 @@
 import { getColorString } from './utils';
 import { DARK, LIGHT } from './consts';
+import powers from './powers';
 
 class Piece {
 	constructor(game, color, attrs) {
@@ -15,10 +16,22 @@ class Piece {
 
 		this.inner = document.createElement('div');
 		this.inner.className = 'checkers-piece-inner';
+
+		this.powerEl = document.createElement('div');
+		this.powerEl.className = 'checkers-piece-power';
+		this.powerEl.style.background = 'grey';
+
+		this.inner.appendChild(this.powerEl);
 		this.el.appendChild(this.inner);
 
 		if (a.isQueen) {
 			this.makeQueen();
+		}
+		if (a.powerSign) {
+			const power = Object.values(powers).filter((p) => {
+				return p.sign === a.powerSign;
+			})[0];
+			this.setPower(power);
 		}
 
 		this.game.el.appendChild(this.el);
@@ -92,21 +105,29 @@ class Piece {
 	setPower(power) {
 		this.power = power;
 		this.el.classList.add(`checkers-piece-power-${power.name}`);
-
-		this.powerEl = document.createElement('div');
-		this.powerEl.className = 'checkers-piece-power';
 		this.powerEl.style.background = power.color;
 
 		if (power.icon) {
 			const svg = document.createElement('div');
 			svg.innerHTML = power.icon;
-			svg.style.margin = '6px';
+			svg.style.margin = '20%';
 			svg.style.opacity = '.5';
 			svg.style.webkitFilter = 'brightness(0)';
 			this.powerEl.appendChild(svg);
 		}
+	}
 
-		this.inner.appendChild(this.powerEl);
+	removePower() {
+		this.power = null;
+		this.powerEl.innerHTML = '';
+		this.powerEl.style.background = 'grey';
+	}
+
+	highlightPower() {
+		this.el.classList.add('checkers-piece-highlight-power');
+	}
+	unhighlightPower() {
+		this.el.classList.remove('checkers-piece-highlight-power');
 	}
 
 	getMoves() {
