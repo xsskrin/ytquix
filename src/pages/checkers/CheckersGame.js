@@ -16,11 +16,19 @@ class CheckersGame {
 			fieldSize: 80,
 		};
 
+		this.setConfig(config);
+
 		if (config && typeof config === 'object') {
 			Object.assign(this.config, config);
 		}
 
 		this.initialize();
+	}
+
+	setConfig(config) {
+		if (config && typeof config === 'object') {
+			Object.assign(this.config, config);
+		}
 	}
 
 	initialize() {
@@ -431,8 +439,6 @@ class CheckersGame {
 			str += f.power ? f.power.sign : '_';
 			return str;
 		}).filter(Boolean).join('');
-
-		console.log(fieldsStr)
 
 		window.localStorage.setItem('checkersData', JSON.stringify({
 			config: this.config,

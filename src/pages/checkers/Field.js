@@ -55,13 +55,21 @@ class Field {
 		if (power.icon) {
 			const svg = document.createElement('div');
 			svg.innerHTML = power.icon;
-			svg.style.margin = '25%';
+			svg.style.margin = '28%';
 			svg.style.opacity = '.5';
 			svg.style.webkitFilter = 'brightness(0)';
 			this.powerEl.appendChild(svg);
 		}
 
 		this.el.appendChild(this.powerEl);
+	}
+
+	addClass(className) {
+		this.el.classList.add(className);
+	}
+
+	removeClass(className) {
+		this.el.classList.remove(className);
 	}
 }
 

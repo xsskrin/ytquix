@@ -2,13 +2,20 @@ import { useRef, useEffect, useState } from 'react';
 import CheckersGame from './CheckersGame';
 import PlayerPanel from './PlayerPanel';
 import NewGameModal from './NewGameModal';
+import { onClickOutside } from './utils';
 
 const Checkers = () => {
 	const ref = useRef();
 	const gameRef = useRef();
+	const menuRef = useRef();
 
 	useEffect(() => {
-		gameRef.current = new CheckersGame(ref.current, {
+		let config = window.localStorage.getItem('checkersConfig');
+		try {
+			config = JSON.parse(config);
+		} catch (e) {}
+
+		gameRef.current = new CheckersGame(ref.current, config || {
 			rows: 6,
 			cols: 6,
 			fillRows: 2,
@@ -19,9 +26,17 @@ const Checkers = () => {
 	const [menu, setMenu] = useState(false);
 	const [modal, setModal] = useState('');
 
+	useEffect(() => {
+		if (menu) {
+			return onClickOutside(menuRef.current, () => {
+				setMenu(false);
+			});
+		}
+	}, [menu]);
+
 	return (
 		<>
-			<div className="checkers-menu">
+			<div className="checkers-menu" ref={menuRef}>
 				<div
 					className="checkers-menu-cog"
 					onClick={() => {

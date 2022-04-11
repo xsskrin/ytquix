@@ -62,6 +62,14 @@ class Piece {
 		}
 	}
 
+	highlightSpecial(color) {
+		this.inner.style.background = color;
+	}
+
+	unhighlightSpecial() {
+		this.inner.style.removeProperty('background');
+	}
+
 	select() {
 		this.el.classList.add('checkers-piece-selected');
 		this.game.selectedPiece = this;
@@ -110,7 +118,7 @@ class Piece {
 		if (power.icon) {
 			const svg = document.createElement('div');
 			svg.innerHTML = power.icon;
-			svg.style.margin = '20%';
+			svg.style.margin = '18%';
 			svg.style.opacity = '.5';
 			svg.style.webkitFilter = 'brightness(0)';
 			this.powerEl.appendChild(svg);

@@ -35,3 +35,24 @@ export const isChildOf = (el, className) => {
 	}
 	return false;
 };
+
+export const onClickOutside = (el, fn) => {
+	const onClick = (e) => {
+		let clicked = e.target;
+		let outside = true;
+		while (clicked) {
+			if (clicked === el) {
+				outside = false;
+				break;
+			}
+			clicked = clicked.parentNode;
+		}
+		if (outside) fn();
+	};
+
+	document.body.addEventListener('click', onClick);
+
+	return () => {
+		document.body.removeEventListener('click', onClick);
+	};
+};
