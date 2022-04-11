@@ -28,6 +28,8 @@ class CheckersGame {
 		this.piecesByNum = {};
 		this.movesByNum = {};
 		this.diagonals = [];
+		this.currentAttackingPiece = null;
+		this.currentMovingPiece = null;
 
 		this.createBoard();
 		this.createStyles();
@@ -362,7 +364,7 @@ class CheckersGame {
 
 		const powerSigns = Object.values(powers).map((p) => p.sign);
 
-		const { piecesStr, currentPlayer } = data;
+		const { piecesStr, fieldsStr, currentPlayer } = data;
 		let num = '', c;
 		for (let i = 0, len = piecesStr.length; i < len; i += 1) {
 			c = piecesStr[i];
@@ -385,6 +387,24 @@ class CheckersGame {
 			}
 		}
 
+		if (fieldsStr) {
+			num = '';
+			for (let i = 0, len = fieldsStr.length; i < len; i += 1) {
+				c = fieldsStr[i];
+				if (Number.isNaN(+c)) {
+					let powerSign = c;
+					const power = Object.values(powers).filter((p) => p.sign === powerSign)[0];
+					const field = this.fieldsByNum[num];
+					if (power && field) {
+						field.setPower(power);
+					}
+					num = '';
+				} else {
+					num += c;
+				}
+			}
+		}
+
 		this.setPlayer(currentPlayer);
 
 		return true;
@@ -401,8 +421,23 @@ class CheckersGame {
 			return str;
 		}).join('');
 
+		const fbn = this.fieldsByNum;
+		const fieldsStr = Object.keys(fbn).map((num) => {
+			const f = fbn[num];
+			if (!f.playable) {
+				return null;
+			}
+			let str = num;
+			str += f.power ? f.power.sign : '_';
+			return str;
+		}).filter(Boolean).join('');
+
+		console.log(fieldsStr)
+
 		window.localStorage.setItem('checkersData', JSON.stringify({
+			config: this.config,
 			piecesStr,
+			fieldsStr,
 			currentPlayer: this.player,
 		}));
 	}

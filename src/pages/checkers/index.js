@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import CheckersGame from './CheckersGame';
 import PlayerPanel from './PlayerPanel';
+import NewGameModal from './NewGameModal';
 
 const Checkers = () => {
 	const ref = useRef();
@@ -16,6 +17,7 @@ const Checkers = () => {
 	}, []);
 
 	const [menu, setMenu] = useState(false);
+	const [modal, setModal] = useState('');
 
 	return (
 		<>
@@ -35,6 +37,14 @@ const Checkers = () => {
 						<div
 							className="checkers-menu-button"
 							onClick={() => {
+								setModal('newGame');
+							}}
+						>
+							New game
+						</div>
+						<div
+							className="checkers-menu-button"
+							onClick={() => {
 								gameRef.current.reset();
 							}}
 						>
@@ -43,6 +53,19 @@ const Checkers = () => {
 					</div>
 				)}
 			</div>
+			{modal === 'newGame' && (
+				<NewGameModal
+					onClose={() => {
+						setModal('');
+					}}
+					onConfirm={(data) => {
+						setModal('');
+						window.localStorage.setItem('checkersConfig', JSON.stringify(data));
+						gameRef.current.setConfig(data);
+						gameRef.current.reset();
+					}}
+				/>
+			)}
 			<div className="checkers-arena">
 				{/* <PlayerPanel
 					color="white" player={1} game={gameRef.current}
