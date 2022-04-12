@@ -53,6 +53,7 @@ const Checkers = () => {
 							className="checkers-menu-button"
 							onClick={() => {
 								setModal('newGame');
+								setMenu(false);
 							}}
 						>
 							New game
@@ -61,6 +62,7 @@ const Checkers = () => {
 							className="checkers-menu-button"
 							onClick={() => {
 								gameRef.current.reset();
+								setMenu(false);
 							}}
 						>
 							Reset
@@ -97,6 +99,7 @@ const Checkers = () => {
 	);
 };
 
+Checkers.layout = null;
 Checkers.title = 'Checkers - JS Praktix';
 
 export default Checkers;

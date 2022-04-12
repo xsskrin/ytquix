@@ -46,7 +46,7 @@ class CheckersGame {
 		this.enhanceFields();
 
 		this.display = new Display(this);
-		this.display.update();
+
 		this.container.parentNode.insertBefore(
 			this.display.el, this.container.parentNode.children[0],
 		);
@@ -64,6 +64,7 @@ class CheckersGame {
 
 		this.el.addEventListener('click', this.onClick);
 
+		this.display.update();
 		this.gameStep();
 	}
 
@@ -115,73 +116,105 @@ class CheckersGame {
 		this.clearSelection();
 
 		const end = this.endEl = document.createElement('div');
-		end.innerHTML = `${winner} won!<br/>Congrats!`;
+		end.innerHTML = `<div class="checkers-end-text">${winner} won!<br/>Congrats!</div>`;
 		end.className = 'checkers-end';
+
+		const button = document.createElement('div');
+		button.className = 'checkers-end-again';
+		button.innerHTML = 'Play again';
+
+		const onClick = () => {
+			this.reset();
+		};
+		button.addEventListener('click', onClick);
+
+		end.appendChild(button);
 		this.container.appendChild(end);
 	}
 
 	gameStep() {
+		// 1. check if any side has no pieces left
+		// 2. check if there is a piece that activated its power
+		// 3. check if there is a piece that is in attacking mode
+
 		this.resetSelectable();
 		this.clearSelection();
 
 		if (this.pieceCounts[LIGHT] === 0) {
 			this.endGame(DARK);
-		} else if (this.pieceCounts[DARK] === 0) {
+			return;
+		}
+		if (this.pieceCounts[DARK] === 0) {
 			this.endGame(LIGHT);
-		} else {
-			const cmp = this.currentMovingPiece;
-			const cap = this.currentAttackingPiece;
+			return;
+		}
 
-			if (cap) {
-				cap.select();
+		const cap = this.currentAttackingPiece;
+		if (cap) {
+			cap.select();
+		}
+
+		const cmp = this.currentMovingPiece;
+		if (cmp) {
+			if (cmp.power && cmp.power === cmp.field.power) {
+				this.runPower(cmp);
+				return;
 			}
 
-			if (cmp && cmp.power && cmp.power === cmp.field.power) {
-				this.runPower(cmp);
-			} else if (cap) {
-				const attacks = this.getAttacks(cap.field.num);
+			if (!cap) {
+				this.currentMovingPiece = null;
+				this.changePlayer();
+				this.gameStep();
+				return;
+			}
+		}
 
-				if (attacks.length) {
-					this.moves = attacks;
+		if (cap) {
+			const attacks = this.getAttacks(cap.field.num);
 
-					attacks.forEach((a) => {
-						this.movesByNum[a.to.num] = a;
-						a.to.highlight();
-					});
+			console.log(attacks.length)
+			if (attacks.length) {
+				this.moves = attacks;
 
-					this.currentOnClick = this.playerAttackClick;
-				} else {
-					this.clearSelection();
-					this.currentAttackingPiece = null;
-					this.changePlayer();
-					this.gameStep();
-				}
+				attacks.forEach((a) => {
+					this.movesByNum[a.to.num] = a;
+					a.to.highlight();
+				});
+
+				this.currentOnClick = this.playerAttackClick;
 			} else {
-				const attacks = this.findPossibleAttacks();
+				this.clearSelection();
+				this.currentAttackingPiece = null;
+				this.currentMovingPiece = null;
+				this.changePlayer();
+				this.gameStep();
+			}
+			return;
+		}
 
-				if (attacks.length) {
-					this.moves = attacks;
+		const attacks = this.findPossibleAttacks();
 
-					attacks.forEach((a) => {
-						a.from.piece.setSelectable(true);
-					});
+		if (attacks.length) {
+			this.moves = attacks;
 
-					this.currentOnClick = this.playerAttackClick;
-				} else {
-					const moves = this.findPossibleMoves();
+			attacks.forEach((a) => {
+				a.from.piece.setSelectable(true);
+			});
 
-					if (!moves.length) {
-						this.endGame(this.getOtherPlayer());
-					} else {
-						this.moves = moves;
+			this.currentOnClick = this.playerAttackClick;
+		} else {
+			const moves = this.findPossibleMoves();
 
-						moves.forEach((m) => {
-							m.from.piece.setSelectable(true);
-						});
+			if (!moves.length) {
+				this.endGame(this.getOtherPlayer());
+			} else {
+				this.moves = moves;
 
-						this.currentOnClick = this.playerMoveClick;
-					}
-				}
+				moves.forEach((m) => {
+					m.from.piece.setSelectable(true);
+				});
+
+				this.currentOnClick = this.playerMoveClick;
 			}
 		}
 	}
@@ -241,7 +274,7 @@ class CheckersGame {
 	afterPowerUse(piece) {
 		this.display.clearInfo();
 		piece.unhighlightPower();
-		this.currentMovingPiece = null;
+		piece.removePower();
 		this.save();
 		this.gameStep();
 	}
@@ -270,7 +303,6 @@ class CheckersGame {
 			this.currentMovingPiece = move.from.piece;
 			this.runMove(move);
 			this.clearSelection();
-			this.changePlayer();
 			this.save();
 			this.gameStep();
 		} else {

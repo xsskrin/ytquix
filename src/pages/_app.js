@@ -21,10 +21,15 @@ function Layout({ title, children }) {
 }
 
 function MyApp({ Component, pageProps }) {
-	const layoutProps = { ...pageProps };
-	const layout = Component.layout || Layout;
+	let layoutProps = { ...pageProps };
+	let layout = Component.layout === undefined ? Layout : Component.layout;
 
 	layoutProps.title = Component.title;
+
+	if (layout === null) {
+		layout = React.Fragment;
+		layoutProps = {};
+	}
 
 	return React.createElement(layout, layoutProps, (
 		<Component {...pageProps} />

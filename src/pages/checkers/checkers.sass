@@ -10,6 +10,7 @@ $piecePowerSize: 20px
 	flex-direction: column
 	flex-grow: 1
 	min-height: 0
+	height: 100vh
 
 .checkers-wrapper
 	display: flex
@@ -40,8 +41,8 @@ $piecePowerSize: 20px
 		position: absolute
 		transform: rotate(-90deg)
 	.checkers-field-dark
-		background: #111
-		transform: scale(.5)
+		background: #222
+		transform: scale(.35)
 		border-radius: 4px
 	.checkers-field-light
 		background: $lightFieldColor
@@ -57,6 +58,20 @@ $piecePowerSize: 20px
 			width: calc(100% - 4px)
 			height: calc(100% - 4px)
 			box-shadow: 0 0 0 6px #000 inset
+		&:hover:after
+			box-shadow: 0 0 0 6px gold inset
+
+	.checkers-field-targetable-wind
+		cursor: pointer
+		&:after
+			content: ''
+			position: absolute
+			pointer-events: none
+			top: 2px
+			left: 2px
+			width: calc(100% - 4px)
+			height: calc(100% - 4px)
+			box-shadow: 0 0 0 6px #a55eea inset
 		&:hover:after
 			box-shadow: 0 0 0 6px gold inset
 
@@ -168,19 +183,40 @@ $piecePowerSize: 20px
 	top: 50%
 	left: 50%
 	width: 100%
-	background: rgba(#000, .5)
+	background: rgba(#000, .75)
 	padding: 32px
-	font-size: 4em
-	color: #fff
 	transform: translateX(-50%) translateY(-50%)
-	text-align: center
-	font-weight: bold
-	text-shadow: 1px 1px 2px rgba(#000, .5)
+
+	.checkers-end-text
+		font-size: 4em
+		color: #fff
+		text-align: center
+		font-weight: bold
+		text-shadow: 1px 1px 2px rgba(#000, .5)
+
+	.checkers-end-again
+		font-size: 2.4em
+		background: gold
+		color: #000
+		width: 200px
+		margin: 0 auto
+		text-align: center
+		padding: 8px 16px
+		margin-top: 32px
+		border-radius: 4px
+		cursor: pointer
+		font-weight: bold
+		text-transform: uppercase
+
+		&:hover
+			background: black
+			color: #fff
 
 .checkers-menu
 	position: absolute
 	top: 14px
 	right: 14px
+	color: #fff
 
 	.checkers-menu-cog
 		font-size: 2em
@@ -204,6 +240,7 @@ $piecePowerSize: 20px
 		font-weight: bold
 		text-transform: uppercase
 		background: #fff
+		color: #000
 		padding: 6px 16px
 		border-radius: 4px
 		text-align: center
@@ -263,6 +300,7 @@ $piecePowerSize: 20px
 	justify-content: center
 	width: 100%
 	height: 100px
+	flex-shrink: 0
 	padding: 16px
 	background: #000
 	color: #fff
@@ -279,3 +317,24 @@ $piecePowerSize: 20px
 
 		.checkers-display-info
 			margin-top: 8px
+
+
+.checkers-text-bubble
+	position: absolute
+	z-index: 100
+	bottom: calc(100% + 8px)
+	left: 50%
+	background: #fff
+	padding: 8px 16px
+	word-break: break-word
+	width: 140px
+	border: 4px solid #000
+	transform: skewX(-10deg) translateX(-50%)
+
+	.ctb-text
+		font-size: 1.4em
+
+	.ctb-arrow
+		position: absolute
+		top: 100%
+		left: 50%

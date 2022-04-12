@@ -1,6 +1,7 @@
 import { getColorString } from './utils';
 import { DARK, LIGHT } from './consts';
 import powers from './powers';
+import TextBubble from './TextBubble';
 
 class Piece {
 	constructor(game, color, attrs) {
@@ -111,6 +112,10 @@ class Piece {
 	}
 
 	setPower(power) {
+		if (this.power) {
+			this.removePower();
+		}
+
 		this.power = power;
 		this.el.classList.add(`checkers-piece-power-${power.name}`);
 		this.powerEl.style.background = power.color;
@@ -239,6 +244,13 @@ class Piece {
 	makeQueen() {
 		this.isQueen = true;
 		this.el.classList.add('checkers-piece-queen');
+	}
+
+	showText(textsGroup, config) {
+		const bubble = new TextBubble(textsGroup, config);
+
+		bubble.appendTo(this.el);
+		bubble.start();
 	}
 }
 

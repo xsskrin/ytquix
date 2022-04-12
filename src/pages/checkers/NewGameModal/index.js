@@ -2,7 +2,11 @@ import { useState } from 'react';
 import s from './new-game-modal.module.sass';
 
 const NewGameModal = ({ onConfirm, onClose }) => {
-	const [values, setValues] = useState({});
+	const [values, setValues] = useState({
+		rows: 8,
+		cols: 8,
+		fillRows: 3,
+	});
 
 	return (
 		<div className={s.wrapper} onClick={(e) => onClose()}>
@@ -23,6 +27,13 @@ const NewGameModal = ({ onConfirm, onClose }) => {
 						value={values.cols}
 						onChange={(e) => {
 							setValues({ ...values, cols: e.target.value });
+						}}
+					/>
+					<div className={s.label}>Fill rows</div>
+					<input
+						value={values.fillRows}
+						onChange={(e) => {
+							setValues({ ...values, fillRows: e.target.value });
 						}}
 					/>
 					<div

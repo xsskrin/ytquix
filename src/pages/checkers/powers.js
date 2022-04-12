@@ -18,8 +18,12 @@ powers.fire = {
 			if (isChildOf(el, 'checkers-piece')) {
 				const targetedPiece = game.piecesByNum[num];
 				if (targetedPiece.color !== piece.color) {
-					targetedPiece.remove();
-					game.afterPowerUse(piece);
+					targetedPiece.showText('got_removed', {
+						onDone() {
+							targetedPiece.remove();
+							game.afterPowerUse(piece);
+						},
+					});
 				}
 			}
 		};
@@ -44,6 +48,7 @@ powers.water = {
 				const targetedPiece = game.piecesByNum[num];
 				if (targetedPiece.color !== piece.color) {
 					targetedPiece.removePower();
+					targetedPiece.showText('lost_power');
 					game.afterPowerUse(piece);
 				}
 			}
@@ -66,8 +71,15 @@ powers.earth = {
 
 			if (isChildOf(el, 'checkers-piece')) {
 				const targetedPiece = game.piecesByNum[num];
-				if (targetedPiece.color !== piece.color) {
-					targetedPiece.removePower();
+				if (targetedPiece.color === piece.color) {
+					const possiblePowers = Object.values(powers).filter((p) => {
+						return p !== targetedPiece.power;
+					});
+					const randomPower = possiblePowers[
+						Math.floor(Math.random() * possiblePowers.length)
+					];
+					targetedPiece.setPower(randomPower);
+					targetedPiece.showText('got_power');
 					game.afterPowerUse(piece);
 				}
 			}
@@ -75,7 +87,7 @@ powers.earth = {
 
 		game.display.showInfo(`
 			Using <span style="color: ${this.color}">EARTH</span> power!
-			<br/>Choose an enemy piece
+			<br/>Choose one of your pieces
 		`.trim());
 	},
 };
@@ -95,7 +107,7 @@ powers.wind = {
 			}
 			if (moves) {
 				moves.forEach((m) => {
-					m.to.removeClass('checkers-field-targetable');
+					m.to.removeClass('checkers-field-targetable-wind');
 				});
 			}
 		};
@@ -112,11 +124,12 @@ powers.wind = {
 				moves = selectedPiece.getMoves();
 
 				moves.forEach((m) => {
-					m.to.addClass('checkers-field-targetable');
+					m.to.addClass('checkers-field-targetable-wind');
 				});
-			} else if (selectedPiece && isChildOf(el, 'checkers-field-targetable')) {
+			} else if (selectedPiece && isChildOf(el, 'checkers-field-targetable-wind')) {
 				const targetedField = game.fieldsByNum[num];
 				selectedPiece.setField(targetedField);
+				selectedPiece.showText('got_moved');
 				clear();
 				game.afterPowerUse(piece);
 			}
