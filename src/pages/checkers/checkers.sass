@@ -168,6 +168,8 @@ $piecePowerSize: 20px
 		.checkers-piece-power
 			transform: scale(1.6)
 
+	.checkers-piece-with-bubble
+		z-index: 200
 
 @keyframes pieceAttacking
 	0%
@@ -321,13 +323,13 @@ $piecePowerSize: 20px
 
 .checkers-text-bubble
 	position: absolute
-	z-index: 100
+	z-index: 500
 	bottom: calc(100% + 8px)
 	left: 50%
 	background: #fff
 	padding: 8px 16px
 	word-break: break-word
-	width: 140px
+	width: 160px
 	border: 4px solid #000
 	transform: skewX(-10deg) translateX(-50%)
 

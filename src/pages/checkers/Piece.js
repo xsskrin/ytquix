@@ -246,7 +246,13 @@ class Piece {
 		this.el.classList.add('checkers-piece-queen');
 	}
 
-	showText(textsGroup, config) {
+	showText(textsGroup, config = {}) {
+		this.el.classList.add('checkers-piece-with-bubble');
+		const onDone = config && config.onDone;
+		config.onDone = () => {
+			this.el.classList.remove('checkers-piece-with-bubble');
+			if (onDone) onDone();
+		};
 		const bubble = new TextBubble(textsGroup, config);
 
 		bubble.appendTo(this.el);

@@ -1,6 +1,6 @@
 const lost_power = [
 	'Oh, no, I\'ve lost my power!',
-	'My power... it\'s gone...',
+	'My power... it\'s gone.',
 	'I feel so weak...',
 ];
 
