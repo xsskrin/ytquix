@@ -2,13 +2,24 @@ import Timeline from './Timeline';
 import Square from './Square';
 import Text from './Text';
 import Slider from './Slider';
+import Viewport from './Viewport';
 
 class Animation {
 	constructor(canvas) {
 		this.canvas = canvas;
+		this.container = this.canvas.parentNode;
 		this.ctx = canvas.getContext('2d');
 
-		const SIZE = 500;
+		this.viewport = new Viewport();
+		this.viewport.setDimensions(800, 400);
+
+		this.viewport.appendChild(this.canvas);
+
+		this.container.appendChild(this.viewport.el);
+
+		const SIZE = 50;
+		const X = 50;
+		const Y = 50;
 
 		const FRAME = 150;
 
@@ -19,8 +30,8 @@ class Animation {
 
 		const yellowSquare = new Square(
 			this.ctx,
-			this.W / 2,
-			this.H / 2,
+			X,
+			Y,
 			'#FDE200',
 		);
 		this.objects.push(yellowSquare);
@@ -45,8 +56,8 @@ class Animation {
 		this.timeline.add((p) => {
 			jsText.visible = p > 0;
 			jsText.opacity = p;
-			jsText.x = this.W / 2 - (SIZE * .4) + SIZE * .8 * (1 - p);
-			jsText.y = this.H / 2 - (SIZE * .4);
+			jsText.x = X - (SIZE * .4) + SIZE * .8 * (1 - p);
+			jsText.y = Y - (SIZE * .4);
 		}, {
 			time: FRAME * 3,
 		});
@@ -62,8 +73,8 @@ class Animation {
 		this.timeline.add((p) => {
 			pt.visible = p > 0;
 			pt.opacity = p;
-			pt.x = this.W / 2 - (SIZE * .4) + SIZE * .8 * (1 - p);
-			pt.y = this.H / 2 + (SIZE * .1);
+			pt.x = X - (SIZE * .4) + SIZE * .8 * (1 - p);
+			pt.y = Y + (SIZE * .1);
 		}, {
 			time: FRAME * 3,
 			offset: FRAME * -2,
@@ -71,8 +82,8 @@ class Animation {
 
 		const whiteSquare = new Square(
 			this.ctx,
-			this.W / 2 + SIZE * .25,
-			this.H / 2 - SIZE * .25,
+			X + SIZE * .25,
+			Y - SIZE * .25,
 			'#FFF',
 		);
 		this.objects.push(whiteSquare);
@@ -90,8 +101,8 @@ class Animation {
 
 		const blackSquare = new Square(
 			this.ctx,
-			this.W / 2 + SIZE * .25,
-			this.H / 2 - SIZE * .25,
+			X + SIZE * .25,
+			Y - SIZE * .25,
 			'#000',
 		);
 		this.objects.push(blackSquare);
@@ -109,8 +120,8 @@ class Animation {
 
 		const redSquare = new Square(
 			this.ctx,
-			this.W / 2 + SIZE * .25,
-			this.H / 2 - SIZE * .25,
+			X + SIZE * .25,
+			Y - SIZE * .25,
 			'#FF3A39',
 		);
 		this.objects.push(redSquare);
@@ -133,15 +144,15 @@ class Animation {
 		this.run();
 
 		this.slider = new Slider();
-		this.canvas.parentNode.appendChild(this.slider.el);
+		this.container.appendChild(this.slider.el);
 		this.slider.onUpdate = (p) => {
 			this.update(p * this.timeline.duration);
 		};
 	}
 
 	setup() {
-		this.W = this.canvas.parentNode.offsetWidth;
-		this.H = this.canvas.parentNode.offsetHeight;
+		this.W = this.canvas.parentNode.offsetWidth / 2;
+		this.H = this.canvas.parentNode.offsetHeight / 2;
 		this.canvas.width = this.W * 2;
 		this.canvas.height = this.H * 2;
 	}

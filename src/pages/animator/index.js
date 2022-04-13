@@ -28,6 +28,7 @@ const ChannelAnimation = () => {
 	);
 };
 
+ChannelAnimation.layout = null;
 ChannelAnimation.title = 'Channel animation - JS Praktix';
 
 export default ChannelAnimation;
