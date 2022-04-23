@@ -13,6 +13,7 @@ const episodes = [
 	new Episode('2.', 'Bouncy Ball', '/bouncy-ball'),
 	// new Episode('2.1.', 'Bouncy Ball On Road', '/bouncy-ball-on-road'),
 	new Episode('3.', 'Checkers', '/checkers'),
+	new Episode('4.', 'Sorting Visualization', '/sorting-visualization'),
 ];
 
 export default function Home() {
