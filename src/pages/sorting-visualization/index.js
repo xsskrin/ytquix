@@ -8,6 +8,8 @@ const SortingVisualization = () => {
 	useEffect(() => {
 		const bubbleSort = new BubbleSort(ref.current);
 
+		bubbleSort.run();
+
 		return () => bubbleSort.clear();
 	}, []);
 
