@@ -31,17 +31,37 @@ class BubbleSort {
 		let i = 0;
 		let n = arr.length - 1;
 
-		const step = () => {
-			const left = arr[i];
-			const right = arr[i + 1];
+		const step = async () => {
 			if (i < n) {
+				const left = arr[i];
+				const right = arr[i + 1];
+
+
 				if (left.value >= right.value) {
+					await Promise.all([
+						left.highlight('red'),
+						right.highlight('red'),
+					]);
+					
 					arr[i] = right;
 					arr[i + 1] = left;
-					right.setIndex(i);
-					left.setIndex(i + 1);
+					await Promise.all([
+						right.setIndex(i),
+						left.setIndex(i + 1),
+					]);
+				} else {
+					await Promise.all([
+						left.highlight('green'),
+						right.highlight('green'),
+					]);
 				}
 				i += 1;
+
+				await Promise.all([
+					left.unhighlight(),
+					right.unhighlight(),
+				]);
+
 				setTimeout(step, 500);
 			} else if (n > 1) {
 				n -= 1;
