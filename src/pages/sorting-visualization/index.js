@@ -1,20 +1,48 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo, useState } from 'react';
 import BubbleSort from './BubbleSort';
+import InsertionSort from './InsertionSort';
 import s from './sorting-visualization.module.sass';
 
 const SortingVisualization = () => {
 	const ref = useRef();
 
-	useEffect(() => {
-		const bubbleSort = new BubbleSort(ref.current);
-
-		bubbleSort.run();
-
-		return () => bubbleSort.clear();
+	const algorithms = useMemo(() => {
+		return [
+			{ title: 'Bubble sort', implementation: BubbleSort },
+			{ title: 'Insertion sort', implementation: InsertionSort },
+		];
 	}, []);
 
+	const [algorithm, setAlgorithm] = useState(algorithms[0]);
+
+	useEffect(() => {
+		const Algorithm = algorithm.implementation;
+		const sorting = new Algorithm(ref.current);
+
+		sorting.run();
+
+		return () => sorting.clear();
+	}, [algorithm]);
+
 	return (
-		<div className={s.wrapper} ref={ref} />
+		<div className={s.wrapper} ref={ref}>
+			<div className={s.options}>
+				{algorithms.map((a) => {
+					return (
+						<div
+							key={a.title}
+							className={s.option}
+							onClick={() => {
+								setAlgorithm(a);
+							}}
+						>
+							{a.title}
+						</div>
+					);
+				})}
+			</div>
+			<div className={s.sortingContainer} ref={ref} />
+		</div>
 	);
 };
 
