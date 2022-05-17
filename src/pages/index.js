@@ -14,6 +14,7 @@ const episodes = [
 	// new Episode('2.1.', 'Bouncy Ball On Road', '/bouncy-ball-on-road'),
 	new Episode('3.', 'Checkers', '/checkers'),
 	new Episode('4.', 'Sorting Visualization', '/sorting-visualization'),
+	new Episode('5.', 'Easy Tower', '/easy-tower'),
 ];
 
 export default function Home() {

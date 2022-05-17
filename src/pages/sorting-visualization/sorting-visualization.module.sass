@@ -9,7 +9,7 @@
 .options
 	display: flex
 	align-items: center
-	margin-bottom: 16px
+	margin-bottom: 100px
 
 .option
 	color: #fff
@@ -19,6 +19,13 @@
 	border-radius: 8px
 	line-height: 1
 	cursor: pointer
+	margin-left: 8px
+	&:first-child
+		margin-left: 0
+
+.optionSelected
+	background: gold
+	color: #000
 
 .items
 	padding: 16px
@@ -40,4 +47,4 @@
 	justify-content: center
 	background: #f2f3f7
 	border-radius: 4px
-	transition: background .2s, left .2s
+	transition: background .2s, left .2s, top .2s

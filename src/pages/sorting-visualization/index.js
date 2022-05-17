@@ -13,7 +13,7 @@ const SortingVisualization = () => {
 		];
 	}, []);
 
-	const [algorithm, setAlgorithm] = useState(algorithms[0]);
+	const [algorithm, setAlgorithm] = useState(algorithms[1]);
 
 	useEffect(() => {
 		const Algorithm = algorithm.implementation;
@@ -28,10 +28,17 @@ const SortingVisualization = () => {
 		<div className={s.wrapper} ref={ref}>
 			<div className={s.options}>
 				{algorithms.map((a) => {
+					const selected = a === algorithm;
+
+					let cls = s.option;
+					if (selected) {
+						cls += ` ${s.optionSelected}`;
+					}
+
 					return (
 						<div
 							key={a.title}
-							className={s.option}
+							className={cls}
 							onClick={() => {
 								setAlgorithm(a);
 							}}
