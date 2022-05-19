@@ -1,3 +1,6 @@
+import Player from './Player';
+import Platform from './Platform';
+
 class EasyTower {
 	constructor(container) {
 		console.log('EasyTower');
@@ -22,21 +25,10 @@ class EasyTower {
 
 		container.appendChild(this.canvas);
 
-		const game = this;
-		this.square = {
-			x: game.W / 2 - 20,
-			y: 0,
-			size: 40,
-			update() {
-				this.y += 1;
-				if (this.y > game.H - this.size) {
-					this.y = game.H - this.size;
-				}
-			},
-			draw() {
-				game.ctx.fillRect(this.x, this.y, this.size, this.size);
-			},
-		};
+		this.player = new Player(this, this.W / 2, 0);
+		this.platform = new Platform(
+			this, this.W / 2, this.H / 2, 100, 20,
+		);
 
 		this.run();
 	}
@@ -49,8 +41,11 @@ class EasyTower {
 		this.rafId = requestAnimationFrame(this.step);
 
 		this.ctx.clearRect(0, 0, this.W, this.H);
-		this.square.draw();
-		this.square.update();
+		this.player.draw();
+		this.player.update();
+
+		this.platform.draw();
+		this.platform.update();
 	}
 
 	clear() {
