@@ -11,6 +11,8 @@ class Platform {
 	}
 
 	update() {
+		this.prevY = this.y;
+
 		this.x += this.speedX;
 		if (this.x > this.game.W - this.width) {
 			this.x = this.game.W - this.width;

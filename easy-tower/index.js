@@ -75,6 +75,8 @@ class EasyTower {
 
 		this.platform.draw();
 		this.platform.update();
+
+		this.player.checkCollisions();
 	}
 
 	clear() {
