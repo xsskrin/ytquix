@@ -8,7 +8,8 @@ class Player {
 		this.speedX = 0;
 		this.speedY = 3;
 		this.accY = .5;
-		this.size = 40;
+		this.width = 52;
+		this.height = 62;
 	}
 
 	update() {
@@ -20,8 +21,8 @@ class Player {
 
 		this.x += this.speedX;
 
-		if (this.y > this.game.H - this.size) {
-			this.y = this.game.H - this.size;
+		if (this.y > this.game.H - this.height) {
+			this.y = this.game.H - this.height;
 			this.speedY = 0;
 			this.accY = 0;
 		}
@@ -38,7 +39,7 @@ class Player {
 		}
 
 		if (this.x + this.size > this.game.W) {
-			this.x = this.game.W - this.size;
+			this.x = this.game.W - this.width;
 		} else if (this.x < 0) {
 			this.x = 0;
 		}
@@ -47,21 +48,26 @@ class Player {
 	checkCollisions() {
 		const p = this.game.platform;
 		if (
-			this.x + this.size > p.x
+			this.x + this.width > p.x
 			&& this.x < p.x + p.width
-			&& this.prevY + this.size <= p.prevY
-			&& this.y + this.size >= p.y
+			&& this.prevY + this.height <= p.prevY
+			&& this.y + this.height >= p.y
 		) {
-			this.y = p.y - this.size;
+			this.y = p.y - this.height;
 			this.speedY = 0;
 			this.accY = 0;
 		}
 	}
 
 	draw() {
-		this.game.ctx.fillRect(
-			this.x, this.y, this.size, this.size
-		);
+		// this.game.ctx.fillRect(
+		// 	this.x, this.y, this.width, this.height
+		// );
+
+		this.game.ctx.drawImage(
+			this.game.assets.hero,
+			this.x, this.y, this.width, this.height,
+		)
 	}
 }
 
