@@ -1,5 +1,6 @@
 import Player from './Player';
 import Platform from './Platform';
+import AssetsLoader from './AssetsLoader';
 
 class EasyTower {
 	constructor(container) {
@@ -25,7 +26,19 @@ class EasyTower {
 
 		container.appendChild(this.canvas);
 
-		this.load().then(() => {
+		this.assetsLoader = new AssetsLoader();
+		this.assets = this.assetsLoader.assets;
+
+		this.assetsLoader.add(
+			'background',
+			require('./assets/background.png').default.src,
+		);
+		this.assetsLoader.add(
+			'hero',
+			require('./assets/hero.png').default.src,
+		);
+
+		this.assetsLoader.load().then(() => {
 			const background = document.createElement('div');
 			Object.assign(background.style, {
 				position: 'absolute',
@@ -73,43 +86,6 @@ class EasyTower {
 			window.addEventListener('keydown', this.onKeyDown);
 
 			this.run();
-		});
-	}
-
-	load() {
-		const assets = this.assets = {};
-
-		return new Promise((resolve) => {
-			const toLoad = {};
-
-			loadImage(
-				'background',
-				require('./assets/background.png').default.src,
-			);
-
-			loadImage(
-				'hero',
-				require('./assets/hero.png').default.src,
-			);
-
-			function loadImage(name, src) {
-				toLoad[name] = true;
-
-				const img = new Image();
-				img.onload = () => {
-					assets[name] = img;
-					onAnyLoad(name);
-				};
-				img.src = src;
-			}
-
-			function onAnyLoad(name) {
-				delete toLoad[name];
-
-				if (!Object.values(toLoad).length) {
-					resolve();
-				}
-			}
 		});
 	}
 
