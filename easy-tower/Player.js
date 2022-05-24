@@ -5,11 +5,12 @@ class Player {
 		this.game = game;
 		this.x = x;
 		this.y = y;
+		this.dirX = 1;
 		this.speedX = 0;
 		this.speedY = 3;
 		this.accY = .5;
-		this.width = 52;
-		this.height = 62;
+		this.width = 54;
+		this.height = 64;
 	}
 
 	update() {
@@ -32,13 +33,15 @@ class Player {
 		}
 		if (this.game.pressed.a) {
 			this.speedX = -4;
+			this.dirX = -1;
 		} else if (this.game.pressed.d) {
 			this.speedX = 4;
+			this.dirX = 1;
 		} else {
 			this.speedX = 0;
 		}
 
-		if (this.x + this.size > this.game.W) {
+		if (this.x + this.width > this.game.W) {
 			this.x = this.game.W - this.width;
 		} else if (this.x < 0) {
 			this.x = 0;
@@ -64,10 +67,24 @@ class Player {
 		// 	this.x, this.y, this.width, this.height
 		// );
 
-		this.game.ctx.drawImage(
+		const c = this.game.ctx;
+
+		c.save();
+
+		c.translate(
+			this.x + this.width / 2,
+			this.y + this.height / 2,
+		);
+
+		c.scale(this.dirX, 1);
+
+		c.drawImage(
 			this.game.assets.hero,
-			this.x, this.y, this.width, this.height,
-		)
+			-this.width / 2, -this.height / 2,
+			this.width, this.height,
+		);
+
+		c.restore();
 	}
 }
 

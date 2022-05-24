@@ -86,6 +86,7 @@ class EasyTower {
 			window.addEventListener('keydown', this.onKeyDown);
 
 			this.run();
+			this.platform.update();
 		});
 	}
 
@@ -105,7 +106,6 @@ class EasyTower {
 		this.player.update();
 
 		this.platform.draw();
-		this.platform.update();
 
 		this.player.checkCollisions();
 	}
