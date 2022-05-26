@@ -37,6 +37,10 @@ class EasyTower {
 			'hero',
 			require('./assets/hero.png').default.src,
 		);
+		this.assetsLoader.add(
+			'platform',
+			require('./assets/platform.png').default.src,
+		);
 
 		this.assetsLoader.load().then(() => {
 			const background = document.createElement('div');
@@ -57,7 +61,7 @@ class EasyTower {
 
 			this.player = new Player(this, this.W / 2, 0);
 			this.platform = new Platform(
-				this, this.W / 2, this.H / 2, 100, 20,
+				this, this.W / 2, this.H - 150, 146, 48,
 			);
 
 			this.pressed = {};
@@ -102,12 +106,14 @@ class EasyTower {
 		this.rafId = requestAnimationFrame(this.step);
 
 		this.ctx.clearRect(0, 0, this.W, this.H);
-		this.player.draw();
+
+		this.platform.update();
 		this.player.update();
 
-		this.platform.draw();
-
 		this.player.checkCollisions();
+
+		this.platform.draw();
+		this.player.draw();
 	}
 
 	clear() {

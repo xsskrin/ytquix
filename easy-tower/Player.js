@@ -16,21 +16,23 @@ class Player {
 	update() {
 		this.prevY = this.y;
 
-		this.y += this.speedY;
+		if (this.ground && this.game.pressed.w) {
+			this.accY = -3;
+		}
+
+		this.ground = false;
+
 		this.speedY += this.accY;
 		this.accY += .3;
+		this.y += this.speedY;
 
 		this.x += this.speedX;
 
-		if (this.y > this.game.H - this.height) {
+		if (this.y >= this.game.H - this.height) {
 			this.y = this.game.H - this.height;
-			this.speedY = 0;
-			this.accY = 0;
+			this.setGround(true);
 		}
 
-		if (this.game.pressed.w && this.speedY === 0) {
-			this.accY = -4;
-		}
 		if (this.game.pressed.a) {
 			this.speedX = -4;
 			this.dirX = -1;
@@ -57,9 +59,14 @@ class Player {
 			&& this.y + this.height >= p.y
 		) {
 			this.y = p.y - this.height;
-			this.speedY = 0;
-			this.accY = 0;
+			this.setGround(p);
 		}
+	}
+
+	setGround(ground) {
+		this.ground = ground;
+		this.speedY = 0;
+		this.accY = 0;
 	}
 
 	draw() {

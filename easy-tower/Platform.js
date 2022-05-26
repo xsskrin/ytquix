@@ -24,9 +24,10 @@ class Platform {
 	}
 
 	draw() {
-		this.game.ctx.fillRect(
-			this.x, this.y, this.width, this.height,
-		);
+		this.game.ctx.drawImage(
+			this.game.assets.platform,
+			this.x, this.y - 8, this.width, this.height,
+		)
 	}
 }
 
