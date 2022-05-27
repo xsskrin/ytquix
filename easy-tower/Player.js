@@ -51,16 +51,17 @@ class Player {
 	}
 
 	checkCollisions() {
-		const p = this.game.platform;
-		if (
-			this.x + this.width > p.x
-			&& this.x < p.x + p.width
-			&& this.prevY + this.height <= p.prevY
-			&& this.y + this.height >= p.y
-		) {
-			this.y = p.y - this.height;
-			this.setGround(p);
-		}
+		this.game.platforms.forEach((p) => {
+			if (
+				this.x + this.width > p.x
+				&& this.x < p.x + p.width
+				&& this.prevY + this.height <= p.prevY
+				&& this.y + this.height >= p.y
+			) {
+				this.y = p.y - this.height;
+				this.setGround(p);
+			}
+		});
 	}
 
 	setGround(ground) {
