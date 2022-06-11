@@ -11,16 +11,19 @@ class Platform {
 	}
 
 	update() {
+		this.prevX = this.x;
 		this.prevY = this.y;
 
-		this.x += this.speedX;
-		if (this.x > this.game.W - this.width) {
-			this.x = this.game.W - this.width;
-			this.speedX *= -1;
-		} else if (this.x < 0) {
-			this.x = 0;
-			this.speedX *= -1;
-		}
+		// this.x += this.speedX;
+		// if (this.x > this.game.W - this.width) {
+		// 	this.x = this.game.W - this.width;
+		// 	this.speedX *= -1;
+		// } else if (this.x < 0) {
+		// 	this.x = 0;
+		// 	this.speedX *= -1;
+		// }
+
+		this.dx = this.x - this.prevX;
 	}
 
 	draw() {

@@ -1,22 +1,34 @@
 import Player from './Player';
 import Platform from './Platform';
 import AssetsLoader from './AssetsLoader';
+import { randomInt } from './utils';
 
 class EasyTower {
 	constructor(container) {
 		console.log('EasyTower');
 		this.container = container;
 
+		this.box = document.createElement('div');
 		this.canvas = document.createElement('canvas');
 		this.ctx = this.canvas.getContext('2d');
 
-		this.W = window.innerWidth;
-		this.H = window.innerHeight;
+		this.W = 480;
+		this.H = 640;
 		this.canvas.width = this.W;
 		this.canvas.height = this.H;
 
-		Object.assign(this.canvas.style, {
+		Object.assign(this.box.style, {
 			position: 'absolute',
+			zIndex: 20,
+			width: this.W + 'px',
+			height: this.H + 'px',
+			top: '50%',
+			left: '50%',
+			transform: 'translateX(-50%) translateY(-50%)',
+		});
+
+		Object.assign(this.canvas.style, {
+			position: 'relative',
 			zIndex: 20,
 			top: 0,
 			left: 0,
@@ -24,7 +36,8 @@ class EasyTower {
 			height: this.H + 'px',
 		});
 
-		container.appendChild(this.canvas);
+		this.box.appendChild(this.canvas);
+		container.appendChild(this.box);
 
 		this.assetsLoader = new AssetsLoader();
 		this.assets = this.assetsLoader.assets;
@@ -48,6 +61,7 @@ class EasyTower {
 	}
 
 	initialize() {
+		this.lastTime = 0;
 		this.score = 0;
 		this.platforms = [];
 
@@ -55,19 +69,21 @@ class EasyTower {
 		this.createScoreDisplay();
 		this.setupPlatforms();
 
-		this.player = new Player(this, this.W / 2, 0);
+		this.player = new Player(this, this.W / 2, this.H - 100);
 
 		this.pressed = {};
 		this.pressedKeysEl = document.createElement('div');
 		Object.assign(this.pressedKeysEl.style, {
 			position: 'absolute',
+			top: '0px',
+			left: '0px',
 			zIndex: 100,
-			fontSize: '40px',
+			fontSize: '32px',
 			color: '#fff',
 			padding: '16px',
 			textShadow: '1px 1px 1px rgba(0, 0, 0, .5)',
 		});
-		this.container.appendChild(this.pressedKeysEl);
+		this.box.appendChild(this.pressedKeysEl);
 
 		this.onKeyUp = (e) => {
 			delete this.pressed[e.key];
@@ -79,10 +95,17 @@ class EasyTower {
 			this.showPressedKeys();
 		};
 
+		window.addEventListener('keyup', this.onSpacebar);
 		window.addEventListener('keyup', this.onKeyUp);
 		window.addEventListener('keydown', this.onKeyDown);
 
 		this.run();
+	}
+
+	onSpacebar = (e) => {
+		if (e.key === ' ') {
+			this.toggleRun();
+		}
 	}
 
 	createScoreDisplay() {
@@ -90,18 +113,20 @@ class EasyTower {
 		Object.assign(this.scoreEl.style, {
 			position: 'absolute',
 			zIndex: 100,
-			top: '8px',
-			right: '8px',
-			fontSize: '20px',
+			top: '16px',
+			right: '32px',
+			fontSize: '40px',
+			fontWeight: 'bold',
 			color: '#fff',
 			textShadow: '1px 1px 1px rgba(0, 0, 0, .25)',
 		});
 
-		this.container.appendChild(this.scoreEl);
+		this.box.appendChild(this.scoreEl);
 	}
 
 	createBackground() {
 		const background = this.background = document.createElement('div');
+
 		Object.assign(background.style, {
 			position: 'absolute',
 			zIndex: 10,
@@ -111,17 +136,17 @@ class EasyTower {
 			height: '100%',
 			backgroundImage: `url('${this.assets.background.src}')`,
 			backgroundPosition: 'bottom',
-			backgroundSize: 'cover',
+			backgroundSize: '600%',
 			backgroundRepeat: 'no-repeat',
 		});
 
-		this.container.appendChild(background);
+		this.box.appendChild(background);
 	}
 
 	setupPlatforms() {
 		for (let i = 0; i < 10; i += 1) {
 			this.createPlatform(
-				this.W / ((i + 1) % 5),
+				randomInt(8, this.W - 154),
 				this.H - (i + 1) * 150,
 			);
 		}
@@ -136,7 +161,22 @@ class EasyTower {
 	}
 
 	run() {
+		this.dt = this.dt || 0;
+		this.lastTime = performance.now();
 		this.rafId = requestAnimationFrame(this.step);
+	}
+
+	toggleRun() {
+		if (this.rafId) {
+			this.pause();
+		} else {
+			this.run();
+		}
+	}
+
+	pause() {
+		cancelAnimationFrame(this.rafId);
+		this.rafId = null;
 	}
 
 	showPressedKeys() {
@@ -146,28 +186,39 @@ class EasyTower {
 	step = () => {
 		this.rafId = requestAnimationFrame(this.step);
 
-		this.ctx.clearRect(0, 0, this.W, this.H);
+		const now = performance.now();
+		this.dt += now - this.lastTime;
+		this.lastTime = now;
 
-		this.ctx.save();
+		while (this.dt >= 16.66) {
+			this.dt -= 16.66;
 
-		this.ctx.translate(0, this.score);
+			this.ctx.clearRect(0, 0, this.W, this.H);
 
-		this.platforms.forEach((p) => p.update());
-		this.player.update();
+			this.ctx.save();
 
-		this.player.checkCollisions();
+			this.ctx.translate(0, this.score);
 
-		this.platforms.forEach((p) => p.draw());
-		this.player.draw();
+			this.platforms.forEach((p) => p.update());
+			this.player.update();
 
-		this.ctx.restore();
+			this.player.checkCollisions();
 
-		if (this.player.y > this.H - this.score) {
-			this.gameOver();
+			this.platforms.forEach((p) => p.draw());
+			this.player.draw();
+
+			this.ctx.restore();
+
+			if (this.player.y > this.H - this.score) {
+				this.gameOver();
+			}
+
+			this.score += 1;
 		}
 
-		this.score += 1;
 		this.updateScore();
+
+		// this.background.style.backgroundPosition = `50% ${-1000 + this.score}px`;
 	}
 
 	gameOver() {
@@ -182,16 +233,19 @@ class EasyTower {
 			position: 'absolute',
 			zIndex: 200,
 			color: '#fff',
-			fontSize: '40px',
-			textShadow: '1px 1px 1px rgba(0, 0, 0, .25)',
+			fontSize: '56px',
+			textShadow: '1px 1px 1px rgba(0, 0, 0, .5)',
 			top: '50%',
 			left: '50%',
+			textAlign: 'center',
+			fontWeight: 'bold',
+			whiteSpace: 'nowrap',
 			transform: 'translateX(-50%) translateY(-50%)',
 		});
 
 		this.gameOverEl.innerHTML = 'GAME OVER';
 
-		this.container.appendChild(this.gameOverEl);
+		this.box.appendChild(this.gameOverEl);
 	}
 
 	updateScore() {
