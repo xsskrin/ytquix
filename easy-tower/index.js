@@ -48,28 +48,14 @@ class EasyTower {
 	}
 
 	initialize() {
+		this.score = 0;
 		this.platforms = [];
 
-		const background = document.createElement('div');
-		Object.assign(background.style, {
-			position: 'absolute',
-			zIndex: 10,
-			top: 0,
-			left: 0,
-			width: '100%',
-			height: '100%',
-			backgroundImage: `url('${this.assets.background.src}')`,
-			backgroundPosition: 'bottom',
-			backgroundSize: 'cover',
-			backgroundRepeat: 'no-repeat',
-		});
-
-		this.container.appendChild(background);
+		this.createBackground();
+		this.createScoreDisplay();
+		this.setupPlatforms();
 
 		this.player = new Player(this, this.W / 2, 0);
-		this.createPlatform(this.W / 2, this.H - 150);
-		this.createPlatform(this.W / 2 + 60, this.H - 300);
-		this.createPlatform(this.W / 2 - 60, this.H - 450);
 
 		this.pressed = {};
 		this.pressedKeysEl = document.createElement('div');
@@ -99,6 +85,48 @@ class EasyTower {
 		this.run();
 	}
 
+	createScoreDisplay() {
+		this.scoreEl = document.createElement('div');
+		Object.assign(this.scoreEl.style, {
+			position: 'absolute',
+			zIndex: 100,
+			top: '8px',
+			right: '8px',
+			fontSize: '20px',
+			color: '#fff',
+			textShadow: '1px 1px 1px rgba(0, 0, 0, .25)',
+		});
+
+		this.container.appendChild(this.scoreEl);
+	}
+
+	createBackground() {
+		const background = this.background = document.createElement('div');
+		Object.assign(background.style, {
+			position: 'absolute',
+			zIndex: 10,
+			top: 0,
+			left: 0,
+			width: '100%',
+			height: '100%',
+			backgroundImage: `url('${this.assets.background.src}')`,
+			backgroundPosition: 'bottom',
+			backgroundSize: 'cover',
+			backgroundRepeat: 'no-repeat',
+		});
+
+		this.container.appendChild(background);
+	}
+
+	setupPlatforms() {
+		for (let i = 0; i < 10; i += 1) {
+			this.createPlatform(
+				this.W / ((i + 1) % 5),
+				this.H - (i + 1) * 150,
+			);
+		}
+	}
+
 	createPlatform(x, y) {
 		const platform = new Platform(
 			this, x, y, 146, 48,
@@ -120,6 +148,10 @@ class EasyTower {
 
 		this.ctx.clearRect(0, 0, this.W, this.H);
 
+		this.ctx.save();
+
+		this.ctx.translate(0, this.score);
+
 		this.platforms.forEach((p) => p.update());
 		this.player.update();
 
@@ -127,6 +159,43 @@ class EasyTower {
 
 		this.platforms.forEach((p) => p.draw());
 		this.player.draw();
+
+		this.ctx.restore();
+
+		if (this.player.y > this.H - this.score) {
+			this.gameOver();
+		}
+
+		this.score += 1;
+		this.updateScore();
+	}
+
+	gameOver() {
+		cancelAnimationFrame(this.rafId);
+
+		this.displayGameOver();
+	}
+
+	displayGameOver() {
+		this.gameOverEl = document.createElement('div');
+		Object.assign(this.gameOverEl.style, {
+			position: 'absolute',
+			zIndex: 200,
+			color: '#fff',
+			fontSize: '40px',
+			textShadow: '1px 1px 1px rgba(0, 0, 0, .25)',
+			top: '50%',
+			left: '50%',
+			transform: 'translateX(-50%) translateY(-50%)',
+		});
+
+		this.gameOverEl.innerHTML = 'GAME OVER';
+
+		this.container.appendChild(this.gameOverEl);
+	}
+
+	updateScore() {
+		this.scoreEl.innerHTML = this.score;
 	}
 
 	clear() {
