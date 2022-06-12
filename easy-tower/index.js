@@ -1,7 +1,10 @@
 import Player from './Player';
 import Platform from './Platform';
 import AssetsLoader from './AssetsLoader';
+import Background from './Background';
 import { randomInt } from './utils';
+
+const PLATFORMS_OFFSET = 150;
 
 class EasyTower {
 	constructor(container) {
@@ -24,6 +27,7 @@ class EasyTower {
 			height: this.H + 'px',
 			top: '50%',
 			left: '50%',
+			overflow: 'hidden',
 			transform: 'translateX(-50%) translateY(-50%)',
 		});
 
@@ -47,6 +51,10 @@ class EasyTower {
 			require('./assets/background.png').default.src,
 		);
 		this.assetsLoader.add(
+			'background2',
+			require('./assets/background-2.png').default.src,
+		);
+		this.assetsLoader.add(
 			'hero',
 			require('./assets/hero.png').default.src,
 		);
@@ -62,8 +70,11 @@ class EasyTower {
 
 	initialize() {
 		this.lastTime = 0;
+		this.chasingAmount = 0;
 		this.score = 0;
 		this.platforms = [];
+		this.lastPlatformIndex = 0;
+		this.lastPlatformY = 0;
 
 		this.createBackground();
 		this.createScoreDisplay();
@@ -125,30 +136,25 @@ class EasyTower {
 	}
 
 	createBackground() {
-		const background = this.background = document.createElement('div');
+		const background = this.background = new Background(this);
 
-		Object.assign(background.style, {
-			position: 'absolute',
-			zIndex: 10,
-			top: 0,
-			left: 0,
-			width: '100%',
-			height: '100%',
-			backgroundImage: `url('${this.assets.background.src}')`,
-			backgroundPosition: 'bottom',
-			backgroundSize: '600%',
-			backgroundRepeat: 'no-repeat',
-		});
+		background.addImage(this.assets.background, 1000);
+		background.addImage(this.assets.background2, 2000);
 
-		this.box.appendChild(background);
+		this.box.appendChild(background.el);
 	}
 
 	setupPlatforms() {
-		for (let i = 0; i < 10; i += 1) {
+		this.createPlatforms(20);
+	}
+
+	createPlatforms(n) {
+		for (let i = 0; i < n; i += 1) {
 			this.createPlatform(
 				randomInt(8, this.W - 154),
-				this.H - (i + 1) * 150,
+				this.H - (this.lastPlatformIndex + 1) * PLATFORMS_OFFSET,
 			);
+			this.lastPlatformIndex += 1;
 		}
 	}
 
@@ -158,6 +164,7 @@ class EasyTower {
 		);
 
 		this.platforms.push(platform);
+		this.lastPlatformY = y;
 	}
 
 	run() {
@@ -197,7 +204,7 @@ class EasyTower {
 
 			this.ctx.save();
 
-			this.ctx.translate(0, this.score);
+			this.ctx.translate(0, this.chasingAmount);
 
 			this.platforms.forEach((p) => p.update());
 			this.player.update();
@@ -209,13 +216,31 @@ class EasyTower {
 
 			this.ctx.restore();
 
-			if (this.player.y > this.H - this.score) {
+			const py = this.player.y;
+			if (py > this.H - this.chasingAmount) {
 				this.gameOver();
 			}
 
-			this.score += 1;
+			let chasingDelta;
+			if (py < -this.chasingAmount + this.H * .1) {
+				chasingDelta = 6;
+			} else if (py < -this.chasingAmount + this.H * .4) {
+				chasingDelta = 3;
+			} else if (py < -this.chasingAmount + this.H * .7) {
+				chasingDelta = 2;
+			} else {
+				chasingDelta = 1;
+			}
+
+			if (py < this.lastPlatformY + 1000) {
+				this.createPlatforms(10);
+			}
+
+			this.chasingAmount += chasingDelta;
+			this.score += chasingDelta / 5;
 		}
 
+		this.background.setChasing(this.chasingAmount);
 		this.updateScore();
 
 		// this.background.style.backgroundPosition = `50% ${-1000 + this.score}px`;
@@ -249,7 +274,7 @@ class EasyTower {
 	}
 
 	updateScore() {
-		this.scoreEl.innerHTML = this.score;
+		this.scoreEl.innerHTML = this.score >> 0;
 	}
 
 	clear() {
