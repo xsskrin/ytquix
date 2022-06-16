@@ -23,6 +23,10 @@ class Platform {
 		// 	this.speedX *= -1;
 		// }
 
+		if (this.y > -this.game.chasingAmount + this.game.H + 100) {
+			this._removed = true;
+		}
+
 		this.dx = this.x - this.prevX;
 	}
 

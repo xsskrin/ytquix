@@ -2,6 +2,7 @@ import Player from './Player';
 import Platform from './Platform';
 import AssetsLoader from './AssetsLoader';
 import Background from './Background';
+import GameOverScreen from './GameOverScreen';
 import { randomInt } from './utils';
 
 const PLATFORMS_OFFSET = 150;
@@ -11,6 +12,34 @@ class EasyTower {
 		console.log('EasyTower');
 		this.container = container;
 
+		this.setupCanvas();
+
+		this.assetsLoader = new AssetsLoader();
+		this.assets = this.assetsLoader.assets;
+
+		this.assetsLoader.add(
+			'background',
+			require('./assets/background.png').default.src,
+		);
+		this.assetsLoader.add(
+			'background2',
+			require('./assets/background-2.png').default.src,
+		);
+		this.assetsLoader.add(
+			'hero',
+			require('./assets/hero.png').default.src,
+		);
+		this.assetsLoader.add(
+			'platform',
+			require('./assets/platform.png').default.src,
+		);
+
+		this.assetsLoader.load().then(() => {
+			this.initialize();
+		});
+	}
+
+	setupCanvas() {
 		this.box = document.createElement('div');
 		this.canvas = document.createElement('canvas');
 		this.ctx = this.canvas.getContext('2d');
@@ -41,34 +70,11 @@ class EasyTower {
 		});
 
 		this.box.appendChild(this.canvas);
-		container.appendChild(this.box);
-
-		this.assetsLoader = new AssetsLoader();
-		this.assets = this.assetsLoader.assets;
-
-		this.assetsLoader.add(
-			'background',
-			require('./assets/background.png').default.src,
-		);
-		this.assetsLoader.add(
-			'background2',
-			require('./assets/background-2.png').default.src,
-		);
-		this.assetsLoader.add(
-			'hero',
-			require('./assets/hero.png').default.src,
-		);
-		this.assetsLoader.add(
-			'platform',
-			require('./assets/platform.png').default.src,
-		);
-
-		this.assetsLoader.load().then(() => {
-			this.initialize();
-		});
+		this.container.appendChild(this.box);
 	}
 
 	initialize() {
+		this.started = false;
 		this.lastTime = 0;
 		this.chasingAmount = 0;
 		this.score = 0;
@@ -106,11 +112,19 @@ class EasyTower {
 			this.showPressedKeys();
 		};
 
+		window.addEventListener('keydown', this.onFirstJump);
 		window.addEventListener('keyup', this.onSpacebar);
 		window.addEventListener('keyup', this.onKeyUp);
 		window.addEventListener('keydown', this.onKeyDown);
 
 		this.run();
+	}
+
+	onFirstJump = (e) => {
+		if (e.key === 'w') {
+			window.removeEventListener('keydown', this.onFirstJump);
+			this.started = true;
+		}
 	}
 
 	onSpacebar = (e) => {
@@ -206,7 +220,16 @@ class EasyTower {
 
 			this.ctx.translate(0, this.chasingAmount);
 
-			this.platforms.forEach((p) => p.update());
+			let len = this.platforms.length;
+			while (len) {
+				len -= 1;
+				this.platforms[len].update();
+
+				if (this.platforms[len]._removed) {
+					this.platforms.splice(len, 1);
+				}
+			}
+
 			this.player.update();
 
 			this.player.checkCollisions();
@@ -221,23 +244,25 @@ class EasyTower {
 				this.gameOver();
 			}
 
-			let chasingDelta;
-			if (py < -this.chasingAmount + this.H * .1) {
-				chasingDelta = 6;
-			} else if (py < -this.chasingAmount + this.H * .4) {
-				chasingDelta = 3;
-			} else if (py < -this.chasingAmount + this.H * .7) {
-				chasingDelta = 2;
-			} else {
-				chasingDelta = 1;
-			}
+			if (this.started) {
+				let chasingDelta;
+				if (py < -this.chasingAmount + this.H * .1) {
+					chasingDelta = 6;
+				} else if (py < -this.chasingAmount + this.H * .4) {
+					chasingDelta = 3;
+				} else if (py < -this.chasingAmount + this.H * .7) {
+					chasingDelta = 2;
+				} else {
+					chasingDelta = 1;
+				}
 
-			if (py < this.lastPlatformY + 1000) {
-				this.createPlatforms(10);
-			}
+				if (py < this.lastPlatformY + 1000) {
+					this.createPlatforms(10);
+				}
 
-			this.chasingAmount += chasingDelta;
-			this.score += chasingDelta / 5;
+				this.chasingAmount += chasingDelta;
+				this.score += chasingDelta / 5;
+			}
 		}
 
 		this.background.setChasing(this.chasingAmount);
@@ -246,31 +271,20 @@ class EasyTower {
 		// this.background.style.backgroundPosition = `50% ${-1000 + this.score}px`;
 	}
 
+	restart = () => {
+		if (this.isGameOver) {
+			this.isGameOver = false;
+			this.clear();
+			this.setupCanvas();
+			this.initialize();
+		}
+	}
+
 	gameOver() {
 		cancelAnimationFrame(this.rafId);
 
-		this.displayGameOver();
-	}
-
-	displayGameOver() {
-		this.gameOverEl = document.createElement('div');
-		Object.assign(this.gameOverEl.style, {
-			position: 'absolute',
-			zIndex: 200,
-			color: '#fff',
-			fontSize: '56px',
-			textShadow: '1px 1px 1px rgba(0, 0, 0, .5)',
-			top: '50%',
-			left: '50%',
-			textAlign: 'center',
-			fontWeight: 'bold',
-			whiteSpace: 'nowrap',
-			transform: 'translateX(-50%) translateY(-50%)',
-		});
-
-		this.gameOverEl.innerHTML = 'GAME OVER';
-
-		this.box.appendChild(this.gameOverEl);
+		this.isGameOver = true;
+		this.gameOverScreen = new GameOverScreen(this);
 	}
 
 	updateScore() {
